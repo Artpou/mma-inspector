@@ -10,6 +10,14 @@ export function isSchedule(value: string): value is Schedule {
   return SCHEDULES.includes(value as Schedule);
 }
 
+export type Stats = {
+  strikeAccuracy: number;
+  koPercentage: number;
+  takedownAccuracy: number;
+  takedownAvg: number;
+  submissionAvg: number;
+};
+
 export type Odd = {
   provider: string;
   priority: number;
@@ -31,6 +39,7 @@ export type Fighter = {
   age: string;
   reach: string;
   mainStyle?: string;
+  stats?: Stats;
   odds?: Odd[];
   images?: {
     left: string;

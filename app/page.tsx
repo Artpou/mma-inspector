@@ -163,11 +163,11 @@ export default function Home() {
           >
             {events.map((event, index) => (
               <AccordionItem
-                className="bg-white rounded-lg shadow-md w-full max-w-7xl mb-4 px-4"
+                className="bg-white rounded-lg shadow-md w-full max-w-7xl mb-4"
                 key={index}
                 value={"" + index}
               >
-                <AccordionTrigger>
+                <AccordionTrigger className="px-4">
                   <Image
                     width={56}
                     height={56}
@@ -220,7 +220,7 @@ export default function Home() {
                     </div>
                   </div>
                 </AccordionTrigger>
-                <AccordionContent>
+                <AccordionContent className="sm:px-4">
                   {!!event.fights ? (
                     event.fights.map((fight, index) => (
                       <div key={index} className="py-6 px-2">

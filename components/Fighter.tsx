@@ -1,5 +1,4 @@
 import { Fighter } from "@/types";
-import { CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { cn } from "@/lib/utils";
 import { inchesToCm, inchesToFeet, poundToKg } from "./utils/metrics";
 
@@ -66,7 +65,7 @@ export const FighterImage = ({
   height = 300,
 }: FighterImageProps) => (
   <Image
-    className={classname}
+    className={cn("max-h-[450px]", classname)}
     src={
       position === "left"
         ? fighter.images?.left || fighter.images?.right || unknownFighterLeft
@@ -81,7 +80,8 @@ export const FighterImage = ({
 interface FightersStatProps {
   fighterA: Fighter;
   fighterB: Fighter;
-  stat: keyof Fighter;
+  stat: string;
+  isAdvanced?: boolean;
   classname?: string;
 }
 
@@ -90,41 +90,99 @@ export const FightersStat = ({
   fighterB,
   stat,
   classname,
+  isAdvanced = false,
 }: FightersStatProps) => {
   const label = (value) => {
-    if (!value) return "-";
+    if (value !== 0 && !value) return "-";
     if (stat === "weight") return poundToKg(Number(value)) + " kg";
     if (stat === "height") return inchesToCm(Number(value)) + " cm";
     if (stat === "reach") return inchesToCm(Number(value)) + " cm";
+    if (
+      stat === "strikeAccuracy" ||
+      stat === "takedownAccuracy" ||
+      stat === "koPercentage"
+    )
+      return value + "%";
     return value;
   };
 
   const subLabel = (value) => {
-    if (!value) return "-";
+    if (!value && !isAdvanced) return "-";
     if (stat === "weight") return value + " lbs";
     if (stat === "height") return inchesToFeet(Number(value));
     if (stat === "reach") return value + '"';
     return;
   };
 
-  const FighterStat = (fighter) => (
-    <div className="flex flex-col">
-      <span>{label(fighter[stat])}</span>
-      <span className="font-light text-muted-foreground">
-        {subLabel(fighter[stat])}
-      </span>
-    </div>
-  );
+  const FighterStat = (fighter) => {
+    const value = isAdvanced ? fighter.stats?.[stat]?.value : fighter[stat];
+
+    if (stat === "submissionAvg") console.log("mm", value);
+
+    return (
+      <div className="flex flex-col">
+        <span>{label(value)}</span>
+        <span className="font-light text-muted-foreground">
+          {subLabel(value)}
+        </span>
+      </div>
+    );
+  };
+
+  const statsCompare = (fighterA, fighterB) => {
+    const statA = isAdvanced ? fighterA.stats?.[stat] : fighterA[stat];
+    const statB = isAdvanced ? fighterB.stats?.[stat] : fighterB[stat];
+
+    if (statA === statB) return "=";
+    return fighterA[stat] < fighterB[stat] ? "<" : ">";
+  };
+
+  const statLabel = (stat) => {
+    if (!isAdvanced) return stat;
+
+    switch (stat) {
+      case "strikeAccuracy":
+        return "Striking Accuracy";
+      case "koPercentage":
+        return "KO Percentage";
+      case "takedownAccuracy":
+        return "Takedown Accuracy";
+      case "takedownAvg":
+        return "Takedown Avg";
+      case "submissionAvg":
+        return "Submission Avg";
+      default:
+        return stat;
+    }
+  };
+
+  const statShortLabel = (stat) => {
+    if (!isAdvanced) return stat;
+
+    switch (stat) {
+      case "strikeAccuracy":
+        return "Strike Acc.";
+      case "koPercentage":
+        return "KO %";
+      case "takedownAccuracy":
+        return "TD Acc.";
+      case "takedownAvg":
+        return "TD Avg.";
+      case "submissionAvg":
+        return "Sub Avg.";
+      default:
+        return stat;
+    }
+  };
 
   return (
     <div className={cn("grid grid-cols-3 items-center", classname)}>
       <span>{FighterStat(fighterA)}</span>
       <div className="flex flex-col uppercase text-center font-light">
-        <span>{stat}</span>
+        <span className="hidden sm:block">{statLabel(stat)}</span>
+        <span className="block sm:hidden">{statShortLabel(stat)}</span>
         <span className="text-muted-foreground text-xs">
-          {typeof fighterA[stat] === "number" && fighterA[stat] > fighterB[stat]
-            ? ">"
-            : "<"}
+          {statsCompare(fighterA, fighterB)}
         </span>
       </div>
       <span className="text-right">{FighterStat(fighterB)}</span>
@@ -141,10 +199,19 @@ interface TitleProps {
 export const FighterTitle = ({ fighter, children, className }: TitleProps) => {
   const recordSplit = !!fighter.record && fighter.record.split("-");
 
+  const openFighter = () =>
+    window.open(
+      `https://www.espn.com/mma/fighter/_/id/${fighter.id}`,
+      "_blank"
+    );
+
   return (
-    <div className={cn("flex gap-2 px-0 items-center mb-2", className)}>
-      <div className={cn("flex flex-col")}>
-        <h2 className="hidden sm:flex items-center">
+    <div className={cn("flex gap-2 px-0 h-full items-center mb-2", className)}>
+      <div className="flex flex-col h-full">
+        <h2
+          className="hidden sm:flex items-center hover:underline cursor-pointer"
+          onClick={openFighter}
+        >
           <span className="block lg:hidden">
             {fighter.shortName || fighter.name}
           </span>
@@ -159,7 +226,10 @@ export const FighterTitle = ({ fighter, children, className }: TitleProps) => {
             />
           )}
         </h2>
-        <div className="flex-center flex-col sm:hidden">
+        <div
+          className="flex-center flex-col sm:hidden hover:underline cursor-pointer"
+          onClick={openFighter}
+        >
           <FighterImage
             fighter={fighter}
             height={200}

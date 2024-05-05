@@ -15,15 +15,15 @@ export async function getFighter({ id }): Promise<Fighter> {
     lastName: fighter.lastName,
     nickname: fighter.nickname,
     age: fighter.age,
-    record: records.items.length > 0 && records.items[0]?.summary,
+    record: records.items?.[0]?.summary,
     flag: fighter.flag?.href,
     weight: fighter.weight,
     height: fighter.height,
     reach: fighter.reach,
-    mainStyle: fighter.style?.length > 0 && fighter.style[0].text,
+    mainStyle: fighter.style?.[0]?.text,
     images: {
-      left: fighter.images?.length > 0 && fighter.images[0].href,
-      right: fighter.images?.length > 1 && fighter.images[1].href,
+      left: fighter.images?.[0]?.href,
+      right: fighter.images?.[1]?.href,
     },
   };
 }
