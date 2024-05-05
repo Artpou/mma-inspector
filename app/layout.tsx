@@ -22,7 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <meta
-        http-equiv="Content-Security-Policy"
+        httpEquiv="Content-Security-Policy"
         content="upgrade-insecure-requests"
       />
       <body
