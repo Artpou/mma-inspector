@@ -33,7 +33,7 @@ export default function RootLayout({
           <div>
             <span className="mr-1">Built by</span>
             <a
-              href="https://arthur-poullin.netlify.app/"
+              href="https://github.com/artpou"
               className="text-foreground font-medium"
             >
               Artpou
