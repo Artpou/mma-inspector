@@ -40,7 +40,6 @@ export default function Home() {
   const scheduleParam = searchParams.get("schedule");
 
   const [events, setEvents] = useState<Event[]>([]);
-  console.log("🚀 ~ Home ~ events:", events);
   const [organization, setOrganization] = useState<Organization>(
     isOrganization(organizationParam) ? organizationParam : "ufc"
   );
