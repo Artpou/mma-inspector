@@ -17,10 +17,16 @@ export async function getEvents({
       };
     })
     .filter((event) => {
+      console.log(schedule);
       if (schedule === "upcoming") return new Date(event.date) > new Date();
       else {
         return new Date(event.date) < new Date();
       }
+    })
+    .sort((a, b) => {
+      if (schedule === "upcoming")
+        return new Date(a.date).valueOf() - new Date(b.date).valueOf();
+      else return new Date(b.date).valueOf() - new Date(a.date).valueOf();
     })
     .slice(0, 10);
 
