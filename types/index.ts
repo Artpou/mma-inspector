@@ -1,3 +1,15 @@
+export const ORGANIZATIONS = ["ufc", "bellator", "pfl"] as const;
+export type Organization = (typeof ORGANIZATIONS)[number];
+export function isOrganization(value: string): value is Organization {
+  return ORGANIZATIONS.includes(value as Organization);
+}
+
+export const SCHEDULES = ["upcoming", "past"] as const;
+export type Schedule = (typeof SCHEDULES)[number];
+export function isSchedule(value: string): value is Schedule {
+  return SCHEDULES.includes(value as Schedule);
+}
+
 export type Odd = {
   provider: string;
   priority: number;

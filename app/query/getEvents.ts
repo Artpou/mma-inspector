@@ -37,7 +37,8 @@ export async function getEvents({
       if (address.city === "Paris") return "France";
       if (address.city === "Manchester" || address.city === "London")
         return "England";
-      if (address.city === "Dublin") return "Ireland";
+      if (address.city === "Dublin" || address.city === "Belfast")
+        return "Ireland";
     };
 
     return {

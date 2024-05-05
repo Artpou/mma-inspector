@@ -1,6 +1,12 @@
 "use client";
 
-import type { Event } from "@/types";
+import {
+  Organization,
+  Schedule,
+  isOrganization,
+  isSchedule,
+  type Event,
+} from "@/types";
 import { useEffect, useState } from "react";
 import {
   Accordion,
@@ -23,12 +29,24 @@ import Image from "next/image";
 
 import Loader from "@/components/Loader";
 import { getFights } from "./query/getFights";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 export default function Home() {
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const { replace } = useRouter();
+
+  const organizationParam = searchParams.get("organization");
+  const scheduleParam = searchParams.get("schedule");
+
   const [events, setEvents] = useState<Event[]>([]);
   console.log("🚀 ~ Home ~ events:", events);
-  const [organization, setOrganization] = useState("ufc");
-  const [schedule, setSchedule] = useState("upcoming");
+  const [organization, setOrganization] = useState<Organization>(
+    isOrganization(organizationParam) ? organizationParam : "ufc"
+  );
+  const [schedule, setSchedule] = useState<Schedule>(
+    isSchedule(scheduleParam) ? scheduleParam : "upcoming"
+  );
   const [loading, setLoading] = useState(false);
 
   const formattedDate = (value: string) => {
@@ -75,6 +93,24 @@ export default function Home() {
     return diffDays + " days";
   };
 
+  const handleOrganizationChange = (value: string) => {
+    if (isOrganization(value)) {
+      setOrganization(value);
+      const params = new URLSearchParams(searchParams);
+      params.set("organization", value);
+      replace(`${pathname}?${params.toString()}`);
+    }
+  };
+
+  const handleScheduleChange = (value: string) => {
+    if (isSchedule(value)) {
+      setSchedule(value);
+      const params = new URLSearchParams(searchParams);
+      params.set("schedule", value);
+      replace(`${pathname}?${params.toString()}`);
+    }
+  };
+
   const dateColor = (day: string) => {
     if (day === "Today" || day === "Tomorrow") return "bg-destructive";
     if (day === "Past") return "bg-muted-foreground";
@@ -86,13 +122,14 @@ export default function Home() {
     if (country === "England") formattedCountry = "gb";
     if (country === "United Arab Emirates") formattedCountry = "ae";
     if (country === "Ireland") formattedCountry = "ie";
+    if (country === "Mexico") formattedCountry = "mx";
     return `https://flagcdn.com/16x12/${formattedCountry}.png`;
   };
 
   return (
     <main className="p-4">
       <div className="flex space-x-2">
-        <Select value={organization} onValueChange={setOrganization}>
+        <Select value={organization} onValueChange={handleOrganizationChange}>
           <SelectTrigger className="mb-2 w-48">
             <SelectValue />
           </SelectTrigger>
@@ -102,7 +139,7 @@ export default function Home() {
             <SelectItem value="bellator">Bellator</SelectItem>
           </SelectContent>
         </Select>
-        <Select value={schedule} onValueChange={setSchedule}>
+        <Select value={schedule} onValueChange={handleScheduleChange}>
           <SelectTrigger className="mb-2 w-48">
             <SelectValue defaultValue="upcoming" />
           </SelectTrigger>
