@@ -191,8 +191,10 @@ export default function Home() {
         handleScheduleChange={handleScheduleChange}
       />
 
-      {!!data?.[0] && !!mainFight && (
+      {!!data?.[0] && !!mainFight ? (
         <FightShowcase fight={mainFight.fight} event={data[0]} />
+      ) : (
+        <div className="h-12" />
       )}
 
       <div className="flex flex-col w-full items-center p-4">
