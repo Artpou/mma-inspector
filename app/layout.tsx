@@ -4,6 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import ReactQueryProvider from "./provider/ReactQueryProvider";
+import { Suspense } from "react";
 
 const fontSans = Inter({
   subsets: ["latin"],
@@ -32,7 +33,9 @@ export default function RootLayout({
           fontSans.variable
         )}
       >
-        <ReactQueryProvider>{children}</ReactQueryProvider>
+        <Suspense>
+          <ReactQueryProvider>{children}</ReactQueryProvider>
+        </Suspense>
         <footer className="flex flex-col gap-3 mb-2 text-center text-sm text-muted-foreground py-4">
           <div>
             <span className="mr-1">Built by</span>
