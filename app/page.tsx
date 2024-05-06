@@ -1,13 +1,13 @@
 "use client";
 
 import {
+  ORGANIZATIONS,
   Organization,
   Schedule,
   isOrganization,
   isSchedule,
-  type Event,
 } from "@/types";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -28,57 +28,88 @@ import Fight from "@/components/Fight";
 import Image from "next/image";
 
 import Loader from "@/components/Loader";
-import { getFights } from "./query/getFights";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import ScrollButton from "@/components/ScrollButton";
+import dynamic from "next/dynamic";
+import { Button } from "@/components/ui/button";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "react-query";
+import { getFights } from "./query/getFights";
+import { getCountryCode } from "countries-list";
+
+const ScrollButton = dynamic(() => import("@/components/ScrollButton"), {
+  ssr: false,
+});
 
 export default function Home() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
+  const queryClient = useQueryClient();
 
-  const organizationParam = searchParams.get("organization");
-  const scheduleParam = searchParams.get("schedule");
+  const organization = isOrganization(searchParams.get("organization"))
+    ? searchParams.get("organization")
+    : "all";
+  const schedule = isSchedule(searchParams.get("schedule"))
+    ? searchParams.get("schedule")
+    : "upcoming";
 
-  const [events, setEvents] = useState<Event[]>([]);
-  const [organization, setOrganization] = useState<Organization>(
-    isOrganization(organizationParam) ? organizationParam : "ufc"
+  const [index, setIndex] = useState(0);
+
+  const { data, isFetching } = useQuery({
+    queryKey: ["events", organization, schedule],
+    queryFn: async () => {
+      return await getEvents({
+        organization,
+        schedule,
+        index,
+      });
+    },
+    enabled: !!organization && !!schedule,
+    refetchOnWindowFocus: false,
+  });
+
+  const { mutate: nextPage } = useMutation(
+    () => getEvents({ organization, schedule, index: index + 1 }),
+    {
+      onSuccess: (newData) => {
+        queryClient.setQueryData(
+          ["events", organization, schedule],
+          (oldData: Event[]) => [...(oldData || []), ...newData]
+        );
+        setIndex((prev) => prev + 1);
+      },
+    }
   );
-  const [schedule, setSchedule] = useState<Schedule>(
-    isSchedule(scheduleParam) ? scheduleParam : "upcoming"
-  );
-  const [loading, setLoading] = useState(false);
+
+  const { mutate: loadFight } = useMutation({
+    mutationFn: async (id: string) => {
+      return await getFights({
+        id: data[id].id,
+        organization: data[id].organization,
+      });
+    },
+    onSuccess: (newData, id) => {
+      queryClient.setQueryData(
+        ["events", organization, schedule],
+        (oldData: Event[]) => {
+          console.log("setting fights for event", oldData);
+          const newEvents = [...oldData];
+          newEvents[id].fights = newData;
+          return newEvents;
+        }
+      );
+    },
+  });
 
   const formattedDate = (value: string) => {
     const date = new Date(value);
     return `${date.toLocaleDateString()} ${date
       .toLocaleTimeString()
       .slice(0, -3)}`;
-  };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      const data = await getEvents({ organization, schedule });
-      setEvents(data);
-      setLoading(false);
-    };
-
-    if (organization && schedule) fetchData();
-  }, [organization, schedule]);
-
-  const handleOpenEvent = async (index) => {
-    if (!index) return;
-
-    const newEvents = [...events];
-    if (!!newEvents[index].fights) return;
-
-    newEvents[index].fights = await getFights({
-      id: newEvents[index].id,
-      organization,
-    });
-
-    setEvents(newEvents);
   };
 
   const inHowManyDays = (date: string) => {
@@ -95,7 +126,7 @@ export default function Home() {
 
   const handleOrganizationChange = (value: string) => {
     if (isOrganization(value)) {
-      setOrganization(value);
+      setIndex(0);
       const params = new URLSearchParams(searchParams);
       params.set("organization", value);
       replace(`${pathname}?${params.toString()}`);
@@ -104,7 +135,7 @@ export default function Home() {
 
   const handleScheduleChange = (value: string) => {
     if (isSchedule(value)) {
-      setSchedule(value);
+      setIndex(0);
       const params = new URLSearchParams(searchParams);
       params.set("schedule", value);
       replace(`${pathname}?${params.toString()}`);
@@ -118,16 +149,19 @@ export default function Home() {
   };
 
   const flagSrc = (country: string) => {
-    let formattedCountry = country ? country.slice(0, 2).toLowerCase() : "";
-    if (country === "England") formattedCountry = "gb";
-    if (country === "United Arab Emirates") formattedCountry = "ae";
-    if (country === "Ireland") formattedCountry = "ie";
-    if (country === "Mexico") formattedCountry = "mx";
-    return `https://flagcdn.com/16x12/${formattedCountry}.png`;
+    const formattedCountry = country
+      .replace("USA", "United States")
+      .replace("England", "United Kingdom");
+
+    let isoCountry = getCountryCode(formattedCountry);
+    if (isoCountry !== false) {
+      return `https://flagcdn.com/16x12/${isoCountry.toLowerCase()}.png`;
+    }
+    return;
   };
 
   return (
-    <main className="p-4">
+    <main className="flex flex-col p-4">
       <ScrollButton />
       <div className="flex space-x-2">
         <Select value={organization} onValueChange={handleOrganizationChange}>
@@ -135,9 +169,11 @@ export default function Home() {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="ufc">UFC</SelectItem>
-            <SelectItem value="pfl">PFL</SelectItem>
-            <SelectItem value="bellator">Bellator</SelectItem>
+            {ORGANIZATIONS.map((org) => (
+              <SelectItem key={org} value={org}>
+                {org.toUpperCase()}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
         <Select value={schedule} onValueChange={handleScheduleChange}>
@@ -152,7 +188,7 @@ export default function Home() {
       </div>
 
       <div className="flex flex-col w-full items-center">
-        {loading ? (
+        {isFetching ? (
           Array.from({ length: 10 }).map((_, index) => (
             <Skeleton key={index} className="w-full h-24 mb-4" />
           ))
@@ -161,9 +197,14 @@ export default function Home() {
             className="flex flex-col items-center w-full"
             type="single"
             collapsible
-            onValueChange={handleOpenEvent}
+            onValueChange={(value) => {
+              if (!!value && !data[value].fights) {
+                console.log("loading fights for event", data[value].id);
+                loadFight(value);
+              }
+            }}
           >
-            {events.map((event, index) => (
+            {data.map((event, index) => (
               <AccordionItem
                 className="bg-white rounded-lg shadow-md w-full max-w-7xl mb-4"
                 key={index}
@@ -173,13 +214,15 @@ export default function Home() {
                   <Image
                     width={56}
                     height={56}
-                    src={event.logo}
+                    src={`/organization/${event.organization}.png`}
                     alt={event.title}
-                    className="mr-4 hidden sm:block"
+                    className="hidden sm:block mr-4 rounded-sm"
                   />
                   <div className="flex justify-between items-center w-full min-h-24 py-2">
                     <div className="flex flex-col items-start">
-                      <span className="text-lg mb-1">{event.title}</span>
+                      <span className="text-lg text-start mb-1">
+                        {event.title}
+                      </span>
                       {!!event.description && (
                         <div className="flex items-center">
                           <span className="flex sm:font-normal text-sm">
@@ -196,19 +239,21 @@ export default function Home() {
                         {event.titleCategory}
                       </span>
                       <div className="flex items-center mt-1">
-                        <Image
-                          width={16}
-                          height={12}
-                          className="mr-1"
-                          alt={event.country}
-                          src={flagSrc(event.country)}
-                        />
+                        {event.country && (
+                          <Image
+                            width={16}
+                            height={12}
+                            className="mr-1"
+                            alt={event.country}
+                            src={flagSrc(event.country)}
+                          />
+                        )}
                         <span className="truncate font-normal text-sm text-muted-foreground">
                           {event.city}, {event.country}
                         </span>
                       </div>
                     </div>
-                    <div className="flex flex-col space-y-1 items-center sm:items-end px-4">
+                    <div className="flex flex-col space-y-1 items-center sm:items-end px-4 min-w-28 sm:min-w-fit">
                       <Badge className={dateColor(inHowManyDays(event.date))}>
                         {inHowManyDays(event.date)}
                       </Badge>
@@ -238,6 +283,15 @@ export default function Home() {
           </Accordion>
         )}
       </div>
+      {!isFetching && data.length === (index + 1) * 10 && (
+        <Button
+          size="lg"
+          className="flex-center self-center"
+          onClick={() => nextPage()}
+        >
+          Load more
+        </Button>
+      )}
     </main>
   );
 }

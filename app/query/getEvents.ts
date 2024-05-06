@@ -1,21 +1,24 @@
 import { SITE_URL } from "./constants";
+import type { Event } from "@/types";
 
 export async function getEvents({
   organization = "ufc",
   schedule = "upcoming",
-}) {
+  index = 0,
+}): Promise<Event[]> {
   const response = await fetch(`${SITE_URL}/${organization}/scoreboard`);
   const scoreboard = await response.json();
 
-  const logo = scoreboard.leagues[0].logos[0].href;
   const calendar = await scoreboard.leagues[0].calendar
     .map((event) => {
+      const link = event.event["$ref"].replace(".pvt", ".com");
       return {
+        organization: link.split("/")[7],
         date: event.startDate,
-        link: event.event["$ref"].replace(".pvt", ".com"),
-        logo,
+        link,
       };
     })
+    .filter((event) => event.organization !== "other")
     .filter((event) => {
       if (schedule === "upcoming") return new Date(event.date) > new Date();
       else {
@@ -27,12 +30,15 @@ export async function getEvents({
         return new Date(a.date).valueOf() - new Date(b.date).valueOf();
       else return new Date(b.date).valueOf() - new Date(a.date).valueOf();
     })
-    .slice(0, 10);
+    .slice(index * 10, index * 10 + 10);
+
+  console.log("cal", index, calendar);
 
   const events = await calendar.map(async (event) => {
     const detailsResponse = await fetch(event.link);
-    const details = await detailsResponse.json();
 
+    // etract organization from the link
+    const details = await detailsResponse.json();
     const mainFight = details.competitions[details.competitions.length - 1];
 
     const extractCountry = (address) => {
@@ -41,7 +47,7 @@ export async function getEvents({
       if (address.state) return "USA";
       if (address.city === "Paris") return "France";
       if (address.city === "Manchester" || address.city === "London")
-        return "England";
+        return "United Kingdom";
       if (address.city === "Dublin" || address.city === "Belfast")
         return "Ireland";
     };

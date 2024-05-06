@@ -27,16 +27,16 @@ export async function getFights({
         const { homeOdds, awayOdds } = odds.items.reduce(
           (acc: { homeOdds: Odd[]; awayOdds: Odd[] }, item) => {
             acc.homeOdds.push({
-              provider: item.provider.name,
-              priority: item.provider.priority,
-              favorite: item.homeAthleteOdds.favorite,
-              value: item.homeAthleteOdds.moneyLine,
+              provider: item?.provider.name,
+              priority: item?.provider.priority,
+              favorite: item?.homeAthleteOdds.favorite,
+              value: item?.homeAthleteOdds.moneyLine,
             });
             acc.awayOdds.push({
-              provider: item.provider.name,
-              priority: item.provider.priority,
-              favorite: item.awayAthleteOdds.favorite,
-              value: item.awayAthleteOdds.moneyLine,
+              provider: item?.provider.name,
+              priority: item?.provider.priority,
+              favorite: item?.awayAthleteOdds.favorite,
+              value: item?.awayAthleteOdds.moneyLine,
             });
             return acc;
           },
@@ -44,7 +44,7 @@ export async function getFights({
         );
 
         if (
-          odds.items[0].homeAthleteOdds.athlete["$ref"].includes(fighter1.id)
+          odds.items[0]?.homeAthleteOdds.athlete["$ref"].includes(fighter1.id)
         ) {
           fighter1.odds = homeOdds;
           fighter2.odds = awayOdds;

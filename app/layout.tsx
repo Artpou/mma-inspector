@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import ReactQueryProvider from "./provider/ReactQueryProvider";
 
 const fontSans = Inter({
   subsets: ["latin"],
@@ -28,7 +29,7 @@ export default function RootLayout({
       <body
         className={cn("font-sans bg-gray-100 text-black", fontSans.variable)}
       >
-        {children}
+        <ReactQueryProvider>{children}</ReactQueryProvider>
         <footer className="flex flex-col gap-3 mb-2 text-center text-sm text-muted-foreground py-4">
           <div>
             <span className="mr-1">Built by</span>
@@ -39,8 +40,8 @@ export default function RootLayout({
               Artpou
             </a>
           </div>
-          <div>
-            <span className="mr-1">Using the API of</span>
+          <div className="flex-center">
+            <span className="mr-2">Using the API of</span>
             <a
               href="https://www.espn.com/"
               target="_blank"
@@ -51,7 +52,7 @@ export default function RootLayout({
                 height={20}
                 src="https://a.espncdn.com/redesign/assets/img/logos/logo-espn-82x20.png"
                 alt="ESPN Logo"
-                className="h-4 inline"
+                className="inline"
               />
             </a>
           </div>

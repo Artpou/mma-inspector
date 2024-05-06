@@ -65,7 +65,7 @@ export const FighterImage = ({
   height = 300,
 }: FighterImageProps) => (
   <Image
-    className={cn("max-h-[450px]", classname)}
+    className={cn("h-fit w-fit max-h-[450px]", classname)}
     src={
       position === "left"
         ? fighter.images?.left || fighter.images?.right || unknownFighterLeft
@@ -220,7 +220,7 @@ export const FighterTitle = ({ fighter, children, className }: TitleProps) => {
               height={16}
               src={fighter.flag}
               alt={fighter.name}
-              className="ml-2"
+              className="ml-2 w-auto"
             />
           )}
         </h2>

@@ -1,4 +1,4 @@
-export const ORGANIZATIONS = ["ufc", "bellator", "pfl"] as const;
+export const ORGANIZATIONS = ["all", "ufc", "bellator", "pfl"] as const;
 export type Organization = (typeof ORGANIZATIONS)[number];
 export function isOrganization(value: string): value is Organization {
   return ORGANIZATIONS.includes(value as Organization);
@@ -67,5 +67,6 @@ export interface Event {
   country: string;
   titleCategory: string;
   fightsNumber: number;
+  organization: string;
   fights?: Fight[];
 }
