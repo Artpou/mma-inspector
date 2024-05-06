@@ -50,7 +50,7 @@ const FightShowcase = ({ event, fight }: Props) => {
 
   return (
     <div
-      className="dark bg-card text-foreground relative flex items-center text-center flex-col min-h-[330px]"
+      className="dark bg-card text-foreground relative flex items-center text-center flex-col min-h-[370px]"
       style={{
         background: `linear-gradient(135deg, ${fight.fighterA.color.primary} 0%, rgb(0,0,0) 50%, ${fight.fighterB.color.primary} 100%)`,
       }}
@@ -60,7 +60,7 @@ const FightShowcase = ({ event, fight }: Props) => {
         height={56}
         src={`/organization/${event.organization}.png`}
         alt={event.title}
-        className="mt-6"
+        className="mt-16"
       />
       <h2 className="z-10 text-4xl font-bold uppercase">{event.title}</h2>
       <span className="z-10 font-medium mb-2">

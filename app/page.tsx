@@ -191,11 +191,9 @@ export default function Home() {
         handleScheduleChange={handleScheduleChange}
       />
 
-      <div className="pt-12">
-        {!!data?.[0] && !!mainFight && (
-          <FightShowcase fight={mainFight.fight} event={data[0]} />
-        )}
-      </div>
+      {!!data?.[0] && !!mainFight && (
+        <FightShowcase fight={mainFight.fight} event={data[0]} />
+      )}
 
       <div className="flex flex-col w-full items-center p-4">
         {isFetching ? (

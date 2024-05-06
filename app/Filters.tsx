@@ -6,9 +6,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
 import { ORGANIZATIONS } from "@/types";
 import dynamic from "next/dynamic";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 const Darkmode = dynamic(() => import("@/components/Darkmode"), {
   ssr: false,
@@ -26,42 +27,64 @@ const Filters = ({
   schedule,
   handleOrganizationChange,
   handleScheduleChange,
-}: Props) => (
-  <div className="fixed z-30 top-0 bg-background p-2 items-center w-full">
-    <div className="flex items-center content-center w-full max-w-7xl mx-auto">
-      <Select value={organization} onValueChange={handleOrganizationChange}>
-        <SelectTrigger className="flex sm:hidden w-full sm:w-48">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          {ORGANIZATIONS.map((org) => (
-            <SelectItem key={org} value={org}>
-              {org.toUpperCase()}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+}: Props) => {
+  const [isTop, setIsTop] = useState(true);
+  console.log("🚀 ~ isTop:", isTop);
 
-      <Tabs value={organization} onValueChange={handleOrganizationChange}>
-        <TabsList className="hidden sm:flex">
-          {ORGANIZATIONS.map((org) => (
-            <TabsTrigger key={org} value={org}>
-              {org.toUpperCase()}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-      </Tabs>
-      <div className="flex w-full ml-2 items-center justify-between">
-        <Tabs value={schedule} onValueChange={handleScheduleChange}>
-          <TabsList>
-            <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
-            <TabsTrigger value="past">Past</TabsTrigger>
+  useEffect(() => {
+    const scrollListener = () => {
+      setIsTop(window.scrollY === 0);
+    };
+
+    window.addEventListener("scroll", scrollListener);
+
+    return () => {
+      window.removeEventListener("scroll", scrollListener);
+    };
+  }, []);
+
+  return (
+    <div
+      className={cn(
+        "fixed z-30 top-0 p-2 items-center w-full transition-all duration-300",
+        isTop ? "" : "bg-card"
+      )}
+    >
+      <div className="flex items-center content-center w-full max-w-7xl mx-auto">
+        <Select value={organization} onValueChange={handleOrganizationChange}>
+          <SelectTrigger className="flex sm:hidden w-full sm:w-48">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {ORGANIZATIONS.map((org) => (
+              <SelectItem key={org} value={org}>
+                {org.toUpperCase()}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <Tabs value={organization} onValueChange={handleOrganizationChange}>
+          <TabsList className="hidden sm:flex">
+            {ORGANIZATIONS.map((org) => (
+              <TabsTrigger key={org} value={org}>
+                {org.toUpperCase()}
+              </TabsTrigger>
+            ))}
           </TabsList>
         </Tabs>
-        <Darkmode className="mx-2" />
+        <div className="flex w-full ml-2 items-center justify-between">
+          <Tabs value={schedule} onValueChange={handleScheduleChange}>
+            <TabsList>
+              <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
+              <TabsTrigger value="past">Past</TabsTrigger>
+            </TabsList>
+          </Tabs>
+          <Darkmode className="mx-2" />
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default Filters;
