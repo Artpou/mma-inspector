@@ -6,6 +6,7 @@ export async function getFighter({ id }): Promise<Fighter> {
   const fighter = await fighterData.json();
   const recordsData = await fetch(`${CORE_URL}/athletes/${id}/records`);
   const records = await recordsData.json();
+  console.log("🚀 ~ getFighter ~ fighter:", fighter);
 
   return {
     id: fighter.id,
@@ -21,9 +22,14 @@ export async function getFighter({ id }): Promise<Fighter> {
     height: fighter.height,
     reach: fighter.reach,
     mainStyle: fighter.style?.[0]?.text,
+    color: {
+      primary: fighter?.citizenshipCountry?.color,
+      secondary: fighter?.citizenshipCountry?.alternateColor,
+    },
     images: {
       left: fighter.images?.[0]?.href,
       right: fighter.images?.[1]?.href,
+      profil: `https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/${fighter.id}.png`,
     },
   };
 }

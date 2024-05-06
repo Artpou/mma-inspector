@@ -1,0 +1,67 @@
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ORGANIZATIONS } from "@/types";
+import dynamic from "next/dynamic";
+import React from "react";
+
+const Darkmode = dynamic(() => import("@/components/Darkmode"), {
+  ssr: false,
+});
+
+interface Props {
+  organization: string;
+  schedule: string;
+  handleOrganizationChange: (value: string) => void;
+  handleScheduleChange: (value: string) => void;
+}
+
+const Filters = ({
+  organization,
+  schedule,
+  handleOrganizationChange,
+  handleScheduleChange,
+}: Props) => (
+  <div className="fixed z-30 top-0 bg-background p-2 items-center w-full">
+    <div className="flex items-center content-center w-full max-w-7xl mx-auto">
+      <Select value={organization} onValueChange={handleOrganizationChange}>
+        <SelectTrigger className="flex sm:hidden w-full sm:w-48">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {ORGANIZATIONS.map((org) => (
+            <SelectItem key={org} value={org}>
+              {org.toUpperCase()}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
+      <Tabs value={organization} onValueChange={handleOrganizationChange}>
+        <TabsList className="hidden sm:flex">
+          {ORGANIZATIONS.map((org) => (
+            <TabsTrigger key={org} value={org}>
+              {org.toUpperCase()}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </Tabs>
+      <div className="flex w-full ml-2 items-center justify-between">
+        <Tabs value={schedule} onValueChange={handleScheduleChange}>
+          <TabsList>
+            <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
+            <TabsTrigger value="past">Past</TabsTrigger>
+          </TabsList>
+        </Tabs>
+        <Darkmode className="mx-2" />
+      </div>
+    </div>
+  </div>
+);
+
+export default Filters;

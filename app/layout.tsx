@@ -27,7 +27,10 @@ export default function RootLayout({
         content="upgrade-insecure-requests"
       />
       <body
-        className={cn("font-sans bg-gray-100 text-black", fontSans.variable)}
+        className={cn(
+          "font-sans bg-background text-foreground",
+          fontSans.variable
+        )}
       >
         <ReactQueryProvider>{children}</ReactQueryProvider>
         <footer className="flex flex-col gap-3 mb-2 text-center text-sm text-muted-foreground py-4">

@@ -5,13 +5,18 @@ import { getFighter } from "./getFighter";
 export async function getFights({
   id,
   organization = "ufc",
+  onlyTitle = false,
 }): Promise<Fight[]> {
   const eventsData = await fetch(
     `${CORE_URL}/leagues/${organization}/events/${id}`
   );
   const events = await eventsData.json();
 
-  const fights = await events.competitions
+  const competitions = onlyTitle
+    ? [events.competitions[events.competitions.length - 1]]
+    : events.competitions;
+
+  const fights = await competitions
     .map(async (fight) => {
       const fighter1: Fighter = await getFighter({
         id: fight.competitors[0].id,

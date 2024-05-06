@@ -41,9 +41,14 @@ export type Fighter = {
   mainStyle?: string;
   stats?: Stats;
   odds?: Odd[];
+  color?: {
+    primary: string;
+    secondary: string;
+  };
   images?: {
     left: string;
     right: string;
+    profil: string;
   };
 };
 

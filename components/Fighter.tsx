@@ -6,6 +6,9 @@ import Image from "next/image";
 
 import unknownFighterLeft from "@/public/fighter-unknown-left.png";
 import unknownFighterRight from "@/public/fighter-unknown-right.png";
+import { TooltipWrapper } from "./ui/tooltip";
+import { Button } from "./ui/button";
+import { CircleHelp } from "lucide-react";
 
 interface FighterOddsProps {
   fighter: Fighter;
@@ -173,12 +176,36 @@ export const FightersStat = ({
     }
   };
 
+  const statDescription = (stat) => {
+    switch (stat) {
+      case "strikeAccuracy":
+        return "Percentage of hits compared to total strikes thrown";
+      case "koPercentage":
+        return "Percentage of wins by KO compared to total wins";
+      case "takedownAccuracy":
+        return "Percentage of successful takedowns compared to total takedown attempts";
+      case "takedownAvg":
+        return "Average takedowns per 15 minutes";
+      case "submissionAvg":
+        return "Average submissions per 15 minutes";
+      default:
+        return stat;
+    }
+  };
+
   return (
     <div className={cn("grid grid-cols-3 items-center", classname)}>
       <span>{FighterStat(fighterA)}</span>
       <div className="flex flex-col uppercase text-center font-light">
-        <span className="hidden sm:block">{statLabel(stat)}</span>
-        <span className="block sm:hidden">{statShortLabel(stat)}</span>
+        <div className="flex-center">
+          <span className="hidden sm:block">{statLabel(stat)}</span>
+          <span className="block sm:hidden">{statShortLabel(stat)}</span>
+          {isAdvanced && (
+            <TooltipWrapper label={statDescription(stat)}>
+              <CircleHelp className="w-4 h-4 ml-1 text-muted-foreground" />
+            </TooltipWrapper>
+          )}
+        </div>
         <span className="text-muted-foreground text-xs">
           {statsCompare(fighterA, fighterB)}
         </span>
@@ -220,7 +247,7 @@ export const FighterTitle = ({ fighter, children, className }: TitleProps) => {
               height={16}
               src={fighter.flag}
               alt={fighter.name}
-              className="ml-2 w-auto"
+              className="ml-2 w-auto max-w-6"
             />
           )}
         </h2>
@@ -228,11 +255,12 @@ export const FighterTitle = ({ fighter, children, className }: TitleProps) => {
           className="flex-center flex-col sm:hidden hover:underline cursor-pointer"
           onClick={openFighter}
         >
-          <FighterImage
-            fighter={fighter}
-            height={200}
-            width={125}
-            classname="sm:hidden h-20 w-20 border border-muted rounded-full object-none object-top"
+          <Image
+            width={80}
+            height={80}
+            alt={fighter.name}
+            src={fighter.images?.profil}
+            className="rounded-full w-20 h-20 object-cover border mb-2"
           />
           <h2>{fighter.firstName}</h2>
           <h2>{fighter.lastName}</h2>

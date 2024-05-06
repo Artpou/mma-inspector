@@ -1,7 +1,7 @@
 "use client";
 
 import {
-  ORGANIZATIONS,
+  Fight as FightType,
   Organization,
   Schedule,
   isOrganization,
@@ -14,31 +14,22 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import {
-  Select,
-  SelectTrigger,
-  SelectContent,
-  SelectItem,
-  SelectValue,
-} from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { getEvents } from "@/app/query/getEvents";
-import Fight from "@/components/Fight";
 import Image from "next/image";
 
 import Loader from "@/components/Loader";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
-import {
-  useInfiniteQuery,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { getFights } from "./query/getFights";
 import { getCountryCode } from "countries-list";
+import Filters from "./Filters";
+import FightShowcase from "@/components/FightShowcase";
+
+const Fight = dynamic(() => import("@/components/Fight"));
 
 const ScrollButton = dynamic(() => import("@/components/ScrollButton"), {
   ssr: false,
@@ -58,21 +49,50 @@ export default function Home() {
     : "upcoming";
 
   const [index, setIndex] = useState(0);
+  const [mainFights, setMainFights] = useState<
+    {
+      organization: string;
+      schedule: string;
+      fight: FightType;
+    }[]
+  >([]);
+
+  const mainFight = mainFights.find(
+    (mainFight) =>
+      mainFight.organization === organization && mainFight.schedule === schedule
+  );
+  console.log("🚀 ~ Home ~ mainFight:", mainFight);
 
   const { data, isFetching } = useQuery({
     queryKey: ["events", organization, schedule],
     queryFn: async () => {
-      return await getEvents({
+      const events = await getEvents({
         organization,
         schedule,
         index,
       });
+
+      if (!mainFight) {
+        const newMainFight = await getFights({
+          id: events[0].id,
+          organization: events[0].organization,
+          onlyTitle: true,
+        });
+
+        setMainFights((prev) => [
+          ...prev,
+          { organization, schedule, fight: newMainFight[0] },
+        ]);
+      }
+
+      return events;
     },
+    staleTime: 1000 * 60 * 2,
     enabled: !!organization && !!schedule,
     refetchOnWindowFocus: false,
   });
 
-  const { mutate: nextPage } = useMutation(
+  const { mutate: nextPage, isLoading } = useMutation(
     () => getEvents({ organization, schedule, index: index + 1 }),
     {
       onSuccess: (newData) => {
@@ -87,6 +107,7 @@ export default function Home() {
 
   const { mutate: loadFight } = useMutation({
     mutationFn: async (id: string) => {
+      if (data[id].fights) return data[id].fights;
       return await getFights({
         id: data[id].id,
         organization: data[id].organization,
@@ -96,7 +117,6 @@ export default function Home() {
       queryClient.setQueryData(
         ["events", organization, schedule],
         (oldData: Event[]) => {
-          console.log("setting fights for event", oldData);
           const newEvents = [...oldData];
           newEvents[id].fights = newData;
           return newEvents;
@@ -161,36 +181,26 @@ export default function Home() {
   };
 
   return (
-    <main className="flex flex-col p-4">
+    <main className="flex flex-col">
       <ScrollButton />
-      <div className="flex space-x-2">
-        <Select value={organization} onValueChange={handleOrganizationChange}>
-          <SelectTrigger className="mb-2 w-48">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {ORGANIZATIONS.map((org) => (
-              <SelectItem key={org} value={org}>
-                {org.toUpperCase()}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Select value={schedule} onValueChange={handleScheduleChange}>
-          <SelectTrigger className="mb-2 w-48">
-            <SelectValue defaultValue="upcoming" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="upcoming">Upcoming</SelectItem>
-            <SelectItem value="past">Past</SelectItem>
-          </SelectContent>
-        </Select>
+
+      <Filters
+        organization={organization}
+        schedule={schedule}
+        handleOrganizationChange={handleOrganizationChange}
+        handleScheduleChange={handleScheduleChange}
+      />
+
+      <div className="pt-12">
+        {!!data?.[0] && !!mainFight && (
+          <FightShowcase fight={mainFight.fight} event={data[0]} />
+        )}
       </div>
 
-      <div className="flex flex-col w-full items-center">
+      <div className="flex flex-col w-full items-center p-4">
         {isFetching ? (
           Array.from({ length: 10 }).map((_, index) => (
-            <Skeleton key={index} className="w-full h-24 mb-4" />
+            <Skeleton key={index} className="w-full max-w-7xl h-24 mb-4" />
           ))
         ) : (
           <Accordion
@@ -199,14 +209,13 @@ export default function Home() {
             collapsible
             onValueChange={(value) => {
               if (!!value && !data[value].fights) {
-                console.log("loading fights for event", data[value].id);
                 loadFight(value);
               }
             }}
           >
             {data.map((event, index) => (
               <AccordionItem
-                className="bg-white rounded-lg shadow-md w-full max-w-7xl mb-4"
+                className="bg-card rounded-lg shadow-md w-full max-w-7xl mb-4"
                 key={index}
                 value={"" + index}
               >
@@ -288,6 +297,7 @@ export default function Home() {
           size="lg"
           className="flex-center self-center"
           onClick={() => nextPage()}
+          loading={isLoading}
         >
           Load more
         </Button>
