@@ -117,8 +117,6 @@ export const FightersStat = ({
   const FighterStat = (fighter) => {
     const value = isAdvanced ? fighter.stats?.[stat]?.value : fighter[stat];
 
-    if (stat === "submissionAvg") console.log("mm", value);
-
     return (
       <div className="flex flex-col">
         <span>{label(value)}</span>

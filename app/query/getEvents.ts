@@ -17,7 +17,6 @@ export async function getEvents({
       };
     })
     .filter((event) => {
-      console.log(schedule);
       if (schedule === "upcoming") return new Date(event.date) > new Date();
       else {
         return new Date(event.date) < new Date();

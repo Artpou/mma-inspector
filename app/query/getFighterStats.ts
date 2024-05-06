@@ -7,6 +7,8 @@ export async function getFighterStats({ id }): Promise<Stats> {
 
   const data = statistics.splits?.categories?.[0]?.stats;
 
+  if (!data) return;
+
   const getStat = (name: string) => data.find((stat) => stat.name === name);
 
   return {
