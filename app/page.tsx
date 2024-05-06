@@ -30,6 +30,7 @@ import Image from "next/image";
 import Loader from "@/components/Loader";
 import { getFights } from "./query/getFights";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import ScrollButton from "@/components/ScrollButton";
 
 export default function Home() {
   const searchParams = useSearchParams();
@@ -127,6 +128,7 @@ export default function Home() {
 
   return (
     <main className="p-4">
+      <ScrollButton />
       <div className="flex space-x-2">
         <Select value={organization} onValueChange={handleOrganizationChange}>
           <SelectTrigger className="mb-2 w-48">
