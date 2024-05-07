@@ -3,6 +3,7 @@
 import React, { useEffect } from "react";
 import { Switch } from "./ui/switch";
 import { Moon, SunDim } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface Props {
   className?: string;
@@ -27,7 +28,8 @@ function Darkmode({ className }: Props) {
     <Switch
       checked={dark}
       onClick={() => setDark((prev) => !prev)}
-      className={className}
+      className={cn("!bg-red", className)}
+      dotClassName={!dark && "bg-yellow-400"}
     >
       {dark ? <Moon className="w-5 h-5" /> : <SunDim className="w-5 h-5" />}
     </Switch>

@@ -15,6 +15,7 @@ export async function getEvents({
       return {
         organization: link.split("/")[7],
         date: event.startDate,
+        isFinished: new Date(event.startDate) < new Date(),
         link,
       };
     })
@@ -32,8 +33,6 @@ export async function getEvents({
     })
     .slice(index * 10, index * 10 + 10);
 
-  console.log("cal", index, calendar);
-
   const events = await calendar.map(async (event) => {
     const detailsResponse = await fetch(event.link);
 
@@ -46,6 +45,7 @@ export async function getEvents({
       if (address.country) return address.country;
       if (address.state) return "USA";
       if (address.city === "Paris") return "France";
+      if (address.city === "Rio De Janeiro") return "Brazil";
       if (address.city === "Manchester" || address.city === "London")
         return "United Kingdom";
       if (address.city === "Dublin" || address.city === "Belfast")

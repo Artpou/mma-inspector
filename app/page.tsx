@@ -25,11 +25,11 @@ import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { getFights } from "./query/getFights";
-import { getCountryCode } from "countries-list";
-import Filters from "./Filters";
-import FightShowcase from "@/components/FightShowcase";
+import { getCountryCode, getEmojiFlag } from "countries-list";
+import Header from "./Header";
+import FightShowcase from "@/components/Fight/FightShowcase";
 
-const Fight = dynamic(() => import("@/components/Fight"));
+const Fight = dynamic(() => import("@/components/Fight/Fight"));
 
 const ScrollButton = dynamic(() => import("@/components/ScrollButton"), {
   ssr: false,
@@ -61,7 +61,6 @@ export default function Home() {
     (mainFight) =>
       mainFight.organization === organization && mainFight.schedule === schedule
   );
-  console.log("🚀 ~ Home ~ mainFight:", mainFight);
 
   const { data, isFetching } = useQuery({
     queryKey: ["events", organization, schedule],
@@ -168,23 +167,22 @@ export default function Home() {
     return;
   };
 
-  const flagSrc = (country: string) => {
+  const flagEmoji = (country: string) => {
+    if (!country) return "";
+
     const formattedCountry = country
       .replace("USA", "United States")
       .replace("England", "United Kingdom");
 
     let isoCountry = getCountryCode(formattedCountry);
-    if (isoCountry !== false) {
-      return `https://flagcdn.com/16x12/${isoCountry.toLowerCase()}.png`;
-    }
-    return;
+    return isoCountry !== false ? getEmojiFlag(isoCountry) : "";
   };
 
   return (
     <main className="flex flex-col">
       <ScrollButton />
 
-      <Filters
+      <Header
         organization={organization}
         schedule={schedule}
         handleOrganizationChange={handleOrganizationChange}
@@ -248,17 +246,9 @@ export default function Home() {
                         {event.titleCategory}
                       </span>
                       <div className="flex items-center mt-1">
-                        {event.country && (
-                          <Image
-                            width={16}
-                            height={12}
-                            className="mr-1"
-                            alt={event.country}
-                            src={flagSrc(event.country)}
-                          />
-                        )}
                         <span className="truncate font-normal text-sm text-muted-foreground">
-                          {event.city}, {event.country}
+                          {flagEmoji(event.country)} {event.city},{" "}
+                          {event.country}
                         </span>
                       </div>
                     </div>

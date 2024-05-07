@@ -22,14 +22,13 @@ interface Props {
   handleScheduleChange: (value: string) => void;
 }
 
-const Filters = ({
+const Header = ({
   organization,
   schedule,
   handleOrganizationChange,
   handleScheduleChange,
 }: Props) => {
   const [isTop, setIsTop] = useState(true);
-  console.log("🚀 ~ isTop:", isTop);
 
   useEffect(() => {
     const scrollListener = () => {
@@ -87,4 +86,4 @@ const Filters = ({
   );
 };
 
-export default Filters;
+export default Header;

@@ -1,7 +1,7 @@
 import { Fight, Event } from "@/types";
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { Badge } from "./ui/badge";
+import { Badge } from "../ui/badge";
 
 type Props = {
   event: Event;
@@ -21,7 +21,7 @@ const FightShowcase = ({ event, fight }: Props) => {
       const currentTime = new Date();
 
       if (fightTime < currentTime) {
-        setTimeUntilFight("Event finish");
+        setTimeUntilFight("Finished");
         return;
       }
 
@@ -55,14 +55,17 @@ const FightShowcase = ({ event, fight }: Props) => {
         background: `linear-gradient(135deg, ${fight.fighterA.color.primary} 0%, rgb(0,0,0) 50%, ${fight.fighterB.color.primary} 100%)`,
       }}
     >
+      <div className="mt-20 sm:mt-16" />
       <Image
         width={56}
         height={56}
         src={`/organization/${event.organization}.png`}
         alt={event.title}
-        className="mt-16"
+        className="hidden sm:block mb-2"
       />
-      <h2 className="z-10 text-4xl font-bold uppercase">{event.title}</h2>
+      <h2 className="z-10 text-4xl max-w-[500px] font-bold uppercase">
+        {event.title}
+      </h2>
       <span className="z-10 font-medium mb-2">
         {event.description ||
           fight.fighterA.shortName + " vs " + fight.fighterB.shortName}

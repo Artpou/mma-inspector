@@ -52,13 +52,36 @@ export type Fighter = {
   };
 };
 
+export type FightStats = {
+  winner: boolean;
+  ko: number;
+  takedowns: number;
+  submissions: number;
+  controlTime: number;
+  strikes: number;
+  strikesAttempted: number;
+  significantStrikes: number;
+  significantStrikesAttempted: number;
+  headStrikes: number;
+  headStrikesAttempted: number;
+  bodyStrikes: number;
+  bodyStrikesAttempted: number;
+  legStrikes: number;
+  legStrikesAttempted: number;
+};
+
 export type Fight = {
+  id: string;
   type: string;
   weight: string;
   description: string;
   titleShot: boolean;
   fighterA: Fighter;
   fighterB: Fighter;
+  stats?: {
+    fighterA: Partial<FightStats>;
+    fighterB: Partial<FightStats>;
+  };
 };
 
 export interface Event {
@@ -73,5 +96,6 @@ export interface Event {
   titleCategory: string;
   fightsNumber: number;
   organization: string;
+  isFinished: boolean;
   fights?: Fight[];
 }

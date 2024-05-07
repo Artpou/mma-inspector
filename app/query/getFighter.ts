@@ -6,7 +6,6 @@ export async function getFighter({ id }): Promise<Fighter> {
   const fighter = await fighterData.json();
   const recordsData = await fetch(`${CORE_URL}/athletes/${id}/records`);
   const records = await recordsData.json();
-  console.log("🚀 ~ getFighter ~ fighter:", fighter);
 
   return {
     id: fighter.id,
