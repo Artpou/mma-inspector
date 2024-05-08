@@ -24,6 +24,10 @@ export type TFighter = Fighter & {
   odds: Odd[];
   stats: any;
   images: any;
+  color: {
+    primary: string;
+    secondary: string;
+  };
 };
 
 export type TFight = Fight & {

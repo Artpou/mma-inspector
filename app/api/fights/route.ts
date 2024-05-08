@@ -52,5 +52,6 @@ export async function GET(
     };
   });
 
+  // @ts-ignore
   return NextResponse.json(fights);
 }

@@ -1,11 +1,11 @@
-import { Fight, Event } from "@/types";
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Badge } from "../ui/badge";
+import { TEvent, TFight } from "@/types";
 
 type Props = {
-  event: Event;
-  fight: Fight;
+  event: TEvent;
+  fight: TFight;
 };
 
 const FightShowcase = ({ event, fight }: Props) => {
