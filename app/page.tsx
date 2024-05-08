@@ -91,6 +91,8 @@ export default function Home() {
     {
       onSuccess: async (response) => {
         const data = await response.json();
+        if (data?.length === 0) return;
+
         queryClient.setQueryData(
           ["events", organization, schedule],
           (oldData: Event[]) => [...(oldData || []), ...data]
@@ -107,12 +109,17 @@ export default function Home() {
       const response = await fetch(`/api/fights?event=${data?.[id]?.id}`);
       return await response.json();
     },
-    onSuccess: (data, id) => {
+    onSuccess: (newData, id) => {
+      if (!newData || newData.length === 0) return;
+      if (data[id].fights) return;
+
+      console.log("newData", newData);
+
       queryClient.setQueryData(
         ["events", organization, schedule],
         (oldData: Event[]) => {
           const newEvents = [...(oldData || [])];
-          newEvents[id].fights = data;
+          if (newEvents[id]) newEvents[id].fights = newData;
           return newEvents;
         }
       );

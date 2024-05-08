@@ -28,11 +28,11 @@ const ScrollButton = () => {
     <Button
       onClick={scrollToTop}
       className={cn(
-        "hidden fixed bottom-0 right-0 m-4 rounded-full",
+        "hidden fixed bottom-0 right-0 z-20 h-12 m-4 rounded-full",
         visible && "block"
       )}
     >
-      <ArrowUp />
+      <ArrowUp className="w-6 h-6" />
     </Button>
   );
 };
