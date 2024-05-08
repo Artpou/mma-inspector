@@ -111,7 +111,7 @@ export default function Home() {
       queryClient.setQueryData(
         ["events", organization, schedule],
         (oldData: Event[]) => {
-          const newEvents = [...oldData];
+          const newEvents = [...(oldData || [])];
           newEvents[id].fights = data;
           return newEvents;
         }
