@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import ReactQueryProvider from "./provider/ReactQueryProvider";
 import { Suspense } from "react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const fontSans = Inter({
   subsets: ["latin"],
@@ -34,7 +35,10 @@ export default function RootLayout({
         )}
       >
         <Suspense>
-          <ReactQueryProvider>{children}</ReactQueryProvider>
+          <ReactQueryProvider>
+            {children}
+            <SpeedInsights />
+          </ReactQueryProvider>
         </Suspense>
         <footer className="flex flex-col gap-3 mb-2 text-center text-sm text-muted-foreground py-4">
           <div>
