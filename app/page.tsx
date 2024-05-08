@@ -41,6 +41,7 @@ export default function Home() {
     : "upcoming";
 
   const [index, setIndex] = useState(0);
+  const [events, setEvents] = useState<TEvent[]>([]);
   const [mainFights, setMainFights] = useState<
     {
       organization: string;
@@ -54,7 +55,7 @@ export default function Home() {
       mainFight.organization === organization && mainFight.schedule === schedule
   );
 
-  const { data, isFetching } = useQuery({
+  const { isFetching } = useQuery({
     queryKey: ["events", organization, schedule],
     queryFn: async () => {
       const response = await fetch(
@@ -74,55 +75,36 @@ export default function Home() {
         ]);
       }
 
-      return events;
+      setEvents(events);
     },
     staleTime: 1000 * 60 * 2,
     enabled: !!organization && !!schedule,
     refetchOnWindowFocus: false,
   });
 
-  const { mutate: nextPage, isLoading } = useMutation(
-    async () =>
-      await fetch(
-        `/api/events?organization=${organization}&schedule=${schedule}&page=${
-          index + 1
-        }`
-      ),
-    {
-      onSuccess: async (response) => {
-        const data = await response.json();
-        if (data?.length === 0) return;
+  const { mutate: nextPage, isLoading } = useMutation(async () => {
+    const response = await fetch(
+      `/api/events?organization=${organization}&schedule=${schedule}&page=${
+        index + 1
+      }`
+    );
+    const newEvents: TEvent[] = await response.json();
 
-        queryClient.setQueryData(
-          ["events", organization, schedule],
-          (oldData: Event[]) => [...(oldData || []), ...data]
-        );
-        setIndex((prev) => prev + 1);
-      },
-    }
-  );
+    setEvents((prev) => [...prev, ...newEvents]);
+  });
 
   const { mutate: loadFight } = useMutation({
     mutationFn: async (id: string) => {
-      if (data[id].fights) return data[id].fights;
+      if (events[id].fights) return;
 
-      const response = await fetch(`/api/fights?event=${data?.[id]?.id}`);
-      return await response.json();
-    },
-    onSuccess: (newData, id) => {
-      if (!newData || newData.length === 0) return;
-      if (data[id].fights) return;
+      const response = await fetch(`/api/fights?event=${events?.[id]?.id}`);
+      const fights = await response.json();
 
-      console.log("newData", newData);
-
-      queryClient.setQueryData(
-        ["events", organization, schedule],
-        (oldData: Event[]) => {
-          const newEvents = [...(oldData || [])];
-          if (newEvents[id]) newEvents[id].fights = newData;
-          return newEvents;
-        }
-      );
+      setEvents((prev) => {
+        const newEvents = [...prev];
+        if (newEvents[id]) newEvents[id].fights = fights;
+        return newEvents;
+      });
     },
   });
 
@@ -191,8 +173,8 @@ export default function Home() {
         handleScheduleChange={handleScheduleChange}
       />
 
-      {!!data?.[0] && !!mainFight ? (
-        <FightShowcase fight={mainFight.fight} event={data[0]} />
+      {!!events?.[0] && !!mainFight ? (
+        <FightShowcase fight={mainFight.fight} event={events[0]} />
       ) : (
         <div className="h-12" />
       )}
@@ -208,13 +190,13 @@ export default function Home() {
             type="single"
             collapsible
             onValueChange={(value) => {
-              if (!!value && !data[value].fights) {
+              if (!!value && !events[value].fights) {
                 loadFight(value);
               }
             }}
           >
-            {!!data &&
-              data.map((event, index) => (
+            {!!events &&
+              events.map((event, index) => (
                 <AccordionItem
                   className="bg-card rounded-lg shadow-md w-full max-w-7xl mb-4"
                   key={index}
@@ -270,7 +252,7 @@ export default function Home() {
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="sm:px-4">
-                    {!!event.fights ? (
+                    {event.fights ? (
                       event.fights.map((fight, index) => (
                         <div key={index} className="py-6 px-2">
                           <Fight fight={fight} />
@@ -285,7 +267,7 @@ export default function Home() {
           </Accordion>
         )}
       </div>
-      {!isFetching && data?.length === (index + 1) * 10 && (
+      {!isFetching && events?.length === (index + 1) * 10 && (
         <Button
           size="lg"
           className="flex-center self-center"
