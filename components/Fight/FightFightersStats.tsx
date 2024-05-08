@@ -1,13 +1,13 @@
-import { Fighter } from "@/types";
 import { cn } from "@/lib/utils";
 import { inchesToCm, inchesToFeet, poundToKg } from "../utils/metrics";
 
 import { TooltipWrapper } from "../ui/tooltip";
 import { CircleHelp } from "lucide-react";
+import { TFighter } from "@/types";
 
 interface FightersStatProps {
-  fighterA: Fighter;
-  fighterB: Fighter;
+  fighterA: TFighter;
+  fighterB: TFighter;
   stat: string;
   isAdvanced?: boolean;
   classname?: string;
