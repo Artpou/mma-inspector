@@ -1,5 +1,9 @@
-import { redirect } from "next/navigation";
+"use client";
+
+import { redirect, usePathname } from "next/navigation";
 
 export default async function NotFound() {
-  redirect("/");
+  const pathname = usePathname();
+  const isApi = pathname.startsWith("/api");
+  if (!isApi) redirect("/");
 }

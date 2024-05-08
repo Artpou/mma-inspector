@@ -1,23 +1,12 @@
-import { FightStats, Fighter } from "@/types";
 import { cn } from "@/lib/utils";
-import { inchesToCm, inchesToFeet, poundToKg } from "../utils/metrics";
-
-import { TooltipWrapper } from "../ui/tooltip";
-import { CircleHelp } from "lucide-react";
+import { TFight } from "@/types";
 
 interface FightersStatProps {
-  statsA: Partial<FightStats>;
-  statsB: Partial<FightStats>;
+  fight: TFight;
   classname?: string;
 }
 
-export const FightFightersStats = ({
-  statsA,
-  statsB,
-  classname,
-}: FightersStatProps) => {
-  const defaultStats = statsB;
-
+export const FightFightersStats = ({ fight, classname }: FightersStatProps) => {
   const Bar = ({ value1, value2 }) => {
     const total = value1 + value2;
     const percent1 = (value1 / total) * 100;
@@ -26,14 +15,14 @@ export const FightFightersStats = ({
       <div
         className={cn(
           "relative w-full h-1 rounded-full bg-muted-foreground",
-          statsB?.winner && "bg-green-700",
+          fight.winner === "B" && "bg-green-700",
           total === 0 && "bg-muted"
         )}
       >
         <div
           className={cn(
             "absolute h-full rounded-full bg-muted-foreground",
-            statsA?.winner && "bg-green-700"
+            fight.winner === "A" && "bg-green-700"
           )}
           style={{ width: `${percent1}%` }}
         />
@@ -41,7 +30,7 @@ export const FightFightersStats = ({
     );
   };
 
-  const getStat = (stats: typeof defaultStats, key: string) => {
+  const getStat = (stats: typeof fight.stats.fighterA, key: string) => {
     if (key === "strikes")
       return `${stats?.[key]} (${(
         (stats.strikes / stats.strikesAttempted) *
@@ -58,7 +47,7 @@ export const FightFightersStats = ({
 
   return (
     <div className={cn("flex flex-col space-y-3 md:mx-10 mb-4", classname)}>
-      {Object.keys(defaultStats).map((key) => {
+      {Object.keys(fight.stats.fighterA).map((key) => {
         if (
           key === "winner" ||
           key.includes("Attempted") ||
@@ -71,11 +60,18 @@ export const FightFightersStats = ({
         return (
           <div key={key} className="flex flex-col sm:space-y-1 w-full">
             <div key={key} className="flex justify-between">
-              <span className="font-medium mx-2">{getStat(statsA, key)}</span>
+              <span className="font-medium mx-2">
+                {getStat(fight.stats.fighterA, key)}
+              </span>
               <span className="uppercase font-light">{key}</span>
-              <span className="font-medium mx-2">{getStat(statsB, key)}</span>
+              <span className="font-medium mx-2">
+                {getStat(fight.stats.fighterB, key)}
+              </span>
             </div>
-            <Bar value1={statsA?.[key] || 0} value2={statsB?.[key] || 0} />
+            <Bar
+              value1={fight.stats.fighterA?.[key] || 0}
+              value2={fight.stats.fighterB?.[key] || 0}
+            />
           </div>
         );
       })}

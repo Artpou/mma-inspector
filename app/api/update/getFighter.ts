@@ -1,7 +1,7 @@
 import { CORE_URL } from "./constants";
-import type { Fighter } from "@/types";
+import { Fighter } from "@prisma/client";
 
-export async function getFighter({ id }): Promise<Fighter> {
+export async function getFighter(id: string): Promise<Fighter> {
   const fighterData = await fetch(`${CORE_URL}/athletes/${id}`);
   const fighter = await fighterData.json();
   const recordsData = await fetch(`${CORE_URL}/athletes/${id}/records`);
@@ -9,6 +9,8 @@ export async function getFighter({ id }): Promise<Fighter> {
 
   return {
     id: fighter.id,
+    createdAt: new Date(),
+    updatedAt: new Date(),
     name: fighter.fullName,
     shortName: fighter.shortName,
     firstName: fighter.firstName,
@@ -20,11 +22,11 @@ export async function getFighter({ id }): Promise<Fighter> {
     weight: fighter.weight,
     height: fighter.height,
     reach: fighter.reach,
-    mainStyle: fighter.style?.[0]?.text,
     color: {
       primary: fighter?.citizenshipCountry?.color,
       secondary: fighter?.citizenshipCountry?.alternateColor,
     },
+    stats: undefined,
     images: {
       left: fighter.images?.[0]?.href,
       right: fighter.images?.[1]?.href,

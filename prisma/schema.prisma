@@ -1,0 +1,90 @@
+// schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Odd {
+  id        String   @id @default(cuid())
+  fightId   String
+  fighterId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  provider  String
+  priority  Int
+  favorite  Boolean
+  value     Float
+  fighter   Fighter  @relation(fields: [fighterId], references: [id])
+  fight     Fight    @relation(fields: [fightId], references: [id])
+}
+
+model Fighter {
+  id           String             @id
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime
+  name         String
+  shortName    String?
+  firstName    String?
+  lastName     String?
+  nickname     String?
+  age          Int?
+  height       Int?
+  weight       Int?
+  reach        Int?
+  record       String?
+  flag         String?
+  stats        Json?
+  color        Json?
+  images       Json?
+  odds         Odd[]
+  fights       FightsOnFighters[]
+  fightsWinner Fight[]
+}
+
+model Fight {
+  id          String             @id
+  eventId     String
+  winnerId    String?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime
+  type        String?
+  weight      String?
+  description String?
+  titleShot   Boolean
+  stats       Json?
+  matchNumber Int?
+  fighters    FightsOnFighters[]
+  winner      Fighter?           @relation(fields: [winnerId], references: [id])
+  event       Event              @relation(fields: [eventId], references: [id])
+  odds        Odd[]
+}
+
+model FightsOnFighters {
+  id        String  @id @default(cuid())
+  fightId   String
+  fighterId String
+  fight     Fight   @relation(fields: [fightId], references: [id])
+  fighter   Fighter @relation(fields: [fighterId], references: [id])
+}
+
+model Event {
+  id            String   @id
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime
+  title         String
+  description   String
+  date          DateTime
+  organization  String
+  isFinished    Boolean
+  fightsNumber  Int
+  needsUpdate   Boolean  @default(true)
+  city          String?
+  country       String?
+  titleCategory String?
+  fights        Fight[]
+}

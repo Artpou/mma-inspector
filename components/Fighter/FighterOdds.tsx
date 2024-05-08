@@ -1,15 +1,15 @@
-import { Fighter as FighterType } from "@/types";
 import { cn } from "@/lib/utils";
+import { TFighter } from "@/types";
 
 interface FighterOddsProps {
-  fighter: FighterType;
+  fighter: TFighter;
   classname?: string;
 }
 
 const FighterOdds = ({ fighter, classname }: FighterOddsProps) => {
   const odds = fighter.odds;
 
-  if (!odds) return null;
+  if (!odds || !odds.length) return null;
 
   const getBarValue = (value: number) => {
     return ((1 - (value + 1000) / 2000) * 100).toFixed(0);

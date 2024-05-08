@@ -1,11 +1,11 @@
+import { Event } from "@prisma/client";
 import { SITE_URL } from "./constants";
-import type { Event } from "@/types";
 
-export async function getEvents({
-  organization = "ufc",
+async function getEvents({
+  organization = "all",
   schedule = "upcoming",
   index = 0,
-}): Promise<Event[]> {
+} = {}): Promise<Event[]> {
   const response = await fetch(`${SITE_URL}/${organization}/scoreboard`);
   const scoreboard = await response.json();
 
@@ -14,27 +14,16 @@ export async function getEvents({
       const link = event.event["$ref"].replace(".pvt", ".com");
       return {
         organization: link.split("/")[7],
-        date: event.startDate,
+        date: new Date(event.startDate),
         isFinished: new Date(event.startDate) < new Date(),
         link,
       };
     })
-    .filter((event) => event.organization !== "other")
-    .filter((event) => {
-      if (schedule === "upcoming") return new Date(event.date) > new Date();
-      else {
-        return new Date(event.date) < new Date();
-      }
-    })
-    .sort((a, b) => {
-      if (schedule === "upcoming")
-        return new Date(a.date).valueOf() - new Date(b.date).valueOf();
-      else return new Date(b.date).valueOf() - new Date(a.date).valueOf();
-    })
-    .slice(index * 10, index * 10 + 10);
+    .filter((event) => event.organization !== "other");
 
   const events = await calendar.map(async (event) => {
     const detailsResponse = await fetch(event.link);
+    delete event.link;
 
     // etract organization from the link
     const details = await detailsResponse.json();
@@ -54,11 +43,13 @@ export async function getEvents({
 
     return {
       id: details.id,
+      updatedAt: new Date(mainFight.lastUpdated),
       ...event,
       title: details.shortName,
       description:
-        details.name.includes("vs") &&
-        details.name.replace(details.shortName, "").replace(": ", ""),
+        (details.name.includes("vs") &&
+          details.name.replace(details.shortName, "").replace(": ", "")) ||
+        "",
       titleCategory: mainFight.type?.text,
       city: mainFight.venue?.address.city,
       country: extractCountry(mainFight.venue?.address),
@@ -68,3 +59,5 @@ export async function getEvents({
 
   return await Promise.all(events);
 }
+
+export default getEvents;

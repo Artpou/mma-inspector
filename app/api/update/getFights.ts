@@ -1,70 +1,37 @@
-import { Fight, Fighter, Odd } from "@/types";
+import { Event, Fight } from "@prisma/client";
 import { CORE_URL } from "./constants";
-import { getFighter } from "./getFighter";
 
-export async function getFights({
-  id,
-  organization = "ufc",
-  onlyTitle = false,
-}): Promise<Fight[]> {
-  const eventsData = await fetch(
+type ExtendedFight = Fight & {
+  fightersId: string[];
+};
+
+export async function getFights(
+  event: Event,
+  existingFights: Fight[] = []
+): Promise<ExtendedFight[]> {
+  const { id, organization } = event;
+
+  const newEventsData = await fetch(
     `${CORE_URL}/leagues/${organization}/events/${id}`
   );
-  const events = await eventsData.json();
+  const newEvent = await newEventsData.json();
+  const newFights = newEvent.competitions.filter((fight) => {
+    const find = existingFights.find((f) => f.id === fight.id);
 
-  const eventIsFinished = new Date(events.date) < new Date();
+    return !find || find.updatedAt < new Date(fight.updatedAt);
+  });
 
-  const competitions = onlyTitle
-    ? [events.competitions[events.competitions.length - 1]]
-    : events.competitions;
-
-  const fights = await competitions.reverse().map(async (fight) => {
-    const fighter1: Fighter = await getFighter({
-      id: fight.competitors[0].id,
-    });
-    const fighter2: Fighter = await getFighter({
-      id: fight.competitors[1].id,
-    });
-
-    if (fight.odds) {
-      const oddsData = await fetch(fight.odds["$ref"]);
-      const odds = await oddsData.json();
-
-      const { homeOdds, awayOdds } = odds.items.reduce(
-        (acc: { homeOdds: Odd[]; awayOdds: Odd[] }, item) => {
-          acc.homeOdds.push({
-            provider: item?.provider.name,
-            priority: item?.provider.priority,
-            favorite: item?.homeAthleteOdds.favorite,
-            value: item?.homeAthleteOdds.moneyLine,
-          });
-          acc.awayOdds.push({
-            provider: item?.provider.name,
-            priority: item?.provider.priority,
-            favorite: item?.awayAthleteOdds.favorite,
-            value: item?.awayAthleteOdds.moneyLine,
-          });
-          return acc;
-        },
-        { homeOdds: [], awayOdds: [] }
-      );
-
-      if (
-        odds.items[0]?.homeAthleteOdds.athlete["$ref"].includes(fighter1.id)
-      ) {
-        fighter1.odds = homeOdds;
-        fighter2.odds = awayOdds;
-      } else {
-        fighter1.odds = awayOdds;
-        fighter2.odds = homeOdds;
-      }
-    }
-
+  const datas = await newFights.reverse().map(async (fight) => {
     const type =
       fight.types?.length > 0 ? fight.types[0].text : fight.type?.text;
 
-    const data: Fight = {
+    const data: ExtendedFight = {
       id: fight.id,
+      eventId: id,
+      fightersId: fight.competitors.map((c) => c.id),
+      createdAt: new Date(),
+      updatedAt: new Date(fight.lastUpdated),
+      matchNumber: fight.matchNumber,
       type,
       description: fight.description
         ?.replace(/\b\d+-\b/g, "")
@@ -72,26 +39,56 @@ export async function getFights({
         .replace("Rnd", "Round"),
       titleShot: type?.includes("Title") || false,
       weight: fight.weight?.text,
-      fighterA: fighter1,
-      fighterB: fighter2,
+      winnerId: fight.competitors.find((c) => c.winner)?.id,
+      stats: undefined,
     };
+
+    // const fighter1: Fighter = await getFighter({
+    //   id: fight.competitors[0].id,
+    // });
+    // const fighter2: Fighter = await getFighter({
+    //   id: fight.competitors[1]id,
+    // });
+
+    // if (fight.odds) {
+    //   const oddsData = await fetch(fight.odds["$ref"]);
+    //   const odds = await oddsData.json();
+
+    //   const { homeOdds, awayOdds } = odds.items.reduce(
+    //     (acc: { homeOdds: Odd[]; awayOdds: Odd[] }, item) => {
+    //       acc.homeOdds.push({
+    //         provider: item?.provider.name,
+    //         priority: item?.provider.priority,
+    //         favorite: item?.homeAthleteOdds.favorite,
+    //         value: item?.homeAthleteOdds.moneyLine,
+    //       });
+    //       acc.awayOdds.push({
+    //         provider: item?.provider.name,
+    //         priority: item?.provider.priority,
+    //         favorite: item?.awayAthleteOdds.favorite,
+    //         value: item?.awayAthleteOdds.moneyLine,
+    //       });
+    //       return acc;
+    //     },
+    //     { homeOdds: [], awayOdds: [] }
+    //   );
+
+    //   if (
+    //     odds.items[0]?.homeAthleteOdds.athlete["$ref"].includes(fighter1.id)
+    //   ) {
+    //     fighter1.odds = homeOdds;
+    //     fighter2.odds = awayOdds;
+    //   } else {
+    //     fighter1.odds = awayOdds;
+    //     fighter2.odds = homeOdds;
+    //   }
+    // }
 
     const hasStats =
       !!fight.competitors[0]?.statistics?.["$ref"] &&
       !!fight.competitors[1]?.statistics?.["$ref"];
 
-    if (eventIsFinished) {
-      data.stats = {
-        fighterA: {
-          winner: fight.competitors[0].winner,
-        },
-        fighterB: {
-          winner: fight.competitors[1].winner,
-        },
-      };
-    }
-
-    if (eventIsFinished && hasStats) {
+    if (!!data.winnerId && hasStats) {
       const fighter1StatsData = await fetch(
         fight.competitors[0].statistics["$ref"]
       );
@@ -116,8 +113,9 @@ export async function getFights({
             return acc + stat.value;
           }, 0);
 
+      data.stats = {};
+
       data.stats.fighterA = {
-        ...data.stats.fighterA,
         ko: getData(fighter1Stats, "knockDowns"),
         strikes: getData(fighter1Stats, "totalStrikesLanded"),
         strikesAttempted: getData(fighter1Stats, "totalStrikesAttempted"),
@@ -135,7 +133,6 @@ export async function getFights({
       };
 
       data.stats.fighterB = {
-        ...data.stats.fighterB,
         ko: getData(fighter2Stats, "knockDowns"),
         strikes: getData(fighter2Stats, "totalStrikesLanded"),
         strikesAttempted: getData(fighter2Stats, "totalStrikesAttempted"),
@@ -152,8 +149,9 @@ export async function getFights({
         headStrikes: getPartStrikes(fighter2Stats, "Head"),
       };
     }
+
     return data;
   });
 
-  return await Promise.all(fights);
+  return await Promise.all(datas);
 }

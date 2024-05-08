@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  Fight as FightType,
-  Organization,
-  Schedule,
-  isOrganization,
-  isSchedule,
-} from "@/types";
+import { TEvent, TFight, isOrganization, isSchedule } from "@/types";
 import { useState } from "react";
 import {
   Accordion,
@@ -16,7 +10,6 @@ import {
 } from "@/components/ui/accordion";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { getEvents } from "@/app/query/getEvents";
 import Image from "next/image";
 
 import Loader from "@/components/Loader";
@@ -24,7 +17,6 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import { getFights } from "./query/getFights";
 import { getCountryCode, getEmojiFlag } from "countries-list";
 import Header from "./Header";
 import FightShowcase from "@/components/Fight/FightShowcase";
@@ -53,7 +45,7 @@ export default function Home() {
     {
       organization: string;
       schedule: string;
-      fight: FightType;
+      fight: TFight;
     }[]
   >([]);
 
@@ -65,18 +57,16 @@ export default function Home() {
   const { data, isFetching } = useQuery({
     queryKey: ["events", organization, schedule],
     queryFn: async () => {
-      const events = await getEvents({
-        organization,
-        schedule,
-        index,
-      });
+      const response = await fetch(
+        `/api/events?organization=${organization}&schedule=${schedule}&page=${index}`
+      );
+      const events: TEvent[] = await response.json();
 
       if (!mainFight) {
-        const newMainFight = await getFights({
-          id: events[0].id,
-          organization: events[0].organization,
-          onlyTitle: true,
-        });
+        const newMainFightResponse = await fetch(
+          `/api/fights?event=${events[0].id}`
+        );
+        const newMainFight: TFight[] = await newMainFightResponse.json();
 
         setMainFights((prev) => [
           ...prev,
@@ -92,12 +82,18 @@ export default function Home() {
   });
 
   const { mutate: nextPage, isLoading } = useMutation(
-    () => getEvents({ organization, schedule, index: index + 1 }),
+    async () =>
+      await fetch(
+        `/api/events?organization=${organization}&schedule=${schedule}&page=${
+          index + 1
+        }`
+      ),
     {
-      onSuccess: (newData) => {
+      onSuccess: async (response) => {
+        const data = await response.json();
         queryClient.setQueryData(
           ["events", organization, schedule],
-          (oldData: Event[]) => [...(oldData || []), ...newData]
+          (oldData: Event[]) => [...(oldData || []), ...data]
         );
         setIndex((prev) => prev + 1);
       },
@@ -107,17 +103,16 @@ export default function Home() {
   const { mutate: loadFight } = useMutation({
     mutationFn: async (id: string) => {
       if (data[id].fights) return data[id].fights;
-      return await getFights({
-        id: data[id].id,
-        organization: data[id].organization,
-      });
+
+      const response = await fetch(`/api/fights?event=${data?.[id]?.id}`);
+      return await response.json();
     },
-    onSuccess: (newData, id) => {
+    onSuccess: (data, id) => {
       queryClient.setQueryData(
         ["events", organization, schedule],
         (oldData: Event[]) => {
           const newEvents = [...oldData];
-          newEvents[id].fights = newData;
+          newEvents[id].fights = data;
           return newEvents;
         }
       );
@@ -211,78 +206,79 @@ export default function Home() {
               }
             }}
           >
-            {data.map((event, index) => (
-              <AccordionItem
-                className="bg-card rounded-lg shadow-md w-full max-w-7xl mb-4"
-                key={index}
-                value={"" + index}
-              >
-                <AccordionTrigger className="px-4">
-                  <Image
-                    width={56}
-                    height={56}
-                    src={`/organization/${event.organization}.png`}
-                    alt={event.title}
-                    className="hidden sm:block mr-4 rounded-sm"
-                  />
-                  <div className="flex justify-between items-center w-full min-h-24 py-2">
-                    <div className="flex flex-col items-start">
-                      <span className="text-lg text-start mb-1">
-                        {event.title}
-                      </span>
-                      {!!event.description && (
-                        <div className="flex items-center">
-                          <span className="flex sm:font-normal text-sm">
-                            {event.description}
+            {!!data &&
+              data.map((event, index) => (
+                <AccordionItem
+                  className="bg-card rounded-lg shadow-md w-full max-w-7xl mb-4"
+                  key={index}
+                  value={"" + index}
+                >
+                  <AccordionTrigger className="px-4">
+                    <Image
+                      width={56}
+                      height={56}
+                      src={`/organization/${event.organization}.png`}
+                      alt={event.title}
+                      className="hidden sm:block mr-4 rounded-sm"
+                    />
+                    <div className="flex justify-between items-center w-full min-h-24 py-2">
+                      <div className="flex flex-col items-start">
+                        <span className="text-lg text-start mb-1">
+                          {event.title}
+                        </span>
+                        {!!event.description && (
+                          <div className="flex items-center">
+                            <span className="flex sm:font-normal text-sm">
+                              {event.description}
+                            </span>
+                            {!!event.titleCategory && (
+                              <Badge className="ml-2 hidden sm:block">
+                                {event.titleCategory}
+                              </Badge>
+                            )}
+                          </div>
+                        )}
+                        <span className="block sm:hidden mt-0 text-xs font-normal">
+                          {event.titleCategory}
+                        </span>
+                        <div className="flex items-center mt-1">
+                          <span className="truncate font-normal text-sm text-muted-foreground">
+                            {flagEmoji(event.country)} {event.city},{" "}
+                            {event.country}
                           </span>
-                          {!!event.titleCategory && (
-                            <Badge className="ml-2 hidden sm:block">
-                              {event.titleCategory}
-                            </Badge>
-                          )}
                         </div>
-                      )}
-                      <span className="block sm:hidden mt-0 text-xs font-normal">
-                        {event.titleCategory}
-                      </span>
-                      <div className="flex items-center mt-1">
-                        <span className="truncate font-normal text-sm text-muted-foreground">
-                          {flagEmoji(event.country)} {event.city},{" "}
-                          {event.country}
+                      </div>
+                      <div className="flex flex-col space-y-1 items-center sm:items-end px-4 min-w-28 sm:min-w-fit">
+                        <Badge className={dateColor(inHowManyDays(event.date))}>
+                          {inHowManyDays(event.date)}
+                        </Badge>
+                        <span className="hidden sm:block">
+                          {formattedDate(event.date)}
+                        </span>
+                        <span className="font-normal text-sm">
+                          {event.fightsNumber} fight
+                          {event.fightsNumber > 1 && "s"}
                         </span>
                       </div>
                     </div>
-                    <div className="flex flex-col space-y-1 items-center sm:items-end px-4 min-w-28 sm:min-w-fit">
-                      <Badge className={dateColor(inHowManyDays(event.date))}>
-                        {inHowManyDays(event.date)}
-                      </Badge>
-                      <span className="hidden sm:block">
-                        {formattedDate(event.date)}
-                      </span>
-                      <span className="font-normal text-sm">
-                        {event.fightsNumber} fight
-                        {event.fightsNumber > 1 && "s"}
-                      </span>
-                    </div>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="sm:px-4">
-                  {!!event.fights ? (
-                    event.fights.map((fight, index) => (
-                      <div key={index} className="py-6 px-2">
-                        <Fight fight={fight} />
-                      </div>
-                    ))
-                  ) : (
-                    <Loader />
-                  )}
-                </AccordionContent>
-              </AccordionItem>
-            ))}
+                  </AccordionTrigger>
+                  <AccordionContent className="sm:px-4">
+                    {!!event.fights ? (
+                      event.fights.map((fight, index) => (
+                        <div key={index} className="py-6 px-2">
+                          <Fight fight={fight} />
+                        </div>
+                      ))
+                    ) : (
+                      <Loader />
+                    )}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
           </Accordion>
         )}
       </div>
-      {!isFetching && data.length === (index + 1) * 10 && (
+      {!isFetching && data?.length === (index + 1) * 10 && (
         <Button
           size="lg"
           className="flex-center self-center"

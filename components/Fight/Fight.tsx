@@ -1,9 +1,7 @@
-import { Fight as FightType, Fighter as FighterType } from "@/types";
 import Image from "next/image";
 import BeltPng from "@/public/belt.png";
 import { Separator } from "../ui/separator";
 import { Button } from "../ui/button";
-import { getFighterStats } from "@/app/query/getFighterStats";
 import { useEffect, useState } from "react";
 import { merge } from "@/components/utils/array";
 import FightFightersStats from "./FightFightersStats";
@@ -14,39 +12,27 @@ import { Tabs, TabsTrigger } from "../ui/tabs";
 import { TabsList } from "@radix-ui/react-tabs";
 import FightStats from "./FightStats";
 import { ArrowLeft, ArrowRight, Crown } from "lucide-react";
+import { TFight, TFighter } from "@/types";
 
 interface Props {
-  fight: FightType;
+  fight: TFight;
 }
 
-const stats: (keyof FighterType)[] = ["height", "weight", "age", "reach"];
+const stats: (keyof TFighter)[] = ["height", "weight", "age", "reach"];
 
-const Fight = ({ fight: fightProps }: Props) => {
-  const [fight, setFight] = useState<FightType>(fightProps);
-  const [loading, setLoading] = useState(false);
-  const [advencedStatsOpen, setStatsOpen] = useState(false);
+const Fight = ({ fight }: Props) => {
   const [statsMode, setStatsMode] = useState<"fighter" | "fight">();
 
   const fighterAOdds = fight.fighterA.odds?.[0]?.value;
   const fighterBOdds = fight.fighterB.odds?.[0]?.value;
-  const haveStats = Object.keys(fight.stats?.fighterB || {}).length > 1;
 
-  const hasWinner =
-    !!fight.stats?.fighterA?.winner || !!fight.stats?.fighterB?.winner;
+  const haveStats = !!fight.stats;
+  const hasWinner = !!fight.winner;
 
   const advancedStats = merge(
     Object.keys(fight.fighterA?.stats || {}),
     Object.keys(fight.fighterB?.stats || {})
   );
-
-  const setAdvancetStatsOpen = async () => {
-    setLoading(true);
-    fight.fighterA.stats = await getFighterStats({ id: fight.fighterA.id });
-    fight.fighterB.stats = await getFighterStats({ id: fight.fighterB.id });
-    setFight({ ...fight });
-    setLoading(false);
-    setStatsOpen(true);
-  };
 
   useEffect(() => {
     if (!statsMode) setStatsMode(haveStats ? "fight" : "fighter");
@@ -58,7 +44,7 @@ const Fight = ({ fight: fightProps }: Props) => {
         fighter={fight.fighterA}
         classname={cn(
           "hidden sm:flex",
-          fight.stats?.fighterB?.winner && "filter grayscale"
+          fight.winner === "B" && "filter grayscale"
         )}
         stats={fight.stats?.fighterB}
       />
@@ -77,7 +63,7 @@ const Fight = ({ fight: fightProps }: Props) => {
           <Separator
             className={cn(
               "w-1/4",
-              fight.stats?.fighterA?.winner && "bg-green-700 h-[2px]"
+              fight.winner === "A" && "bg-green-700 h-[2px]"
             )}
           />
           <div className="flex flex-col items-center">
@@ -89,14 +75,14 @@ const Fight = ({ fight: fightProps }: Props) => {
           <Separator
             className={cn(
               "w-1/4",
-              fight.stats?.fighterB?.winner && "bg-green-700 h-[2px]"
+              fight.winner === "B" && "bg-green-700 h-[2px]"
             )}
           />
         </div>
         <div className="flex w-full justify-around sm:items-center gap-4 mb-2">
           <Fighter
             fighter={fight.fighterA}
-            fightStats={fight.stats?.fighterA}
+            winner={fight.winner && fight.winner === "A"}
             className="text-center justify-center w-1/3 sm:w-2/5"
           />
           <span className="hidden sm:flex-center">VS</span>
@@ -116,11 +102,11 @@ const Fight = ({ fight: fightProps }: Props) => {
             </div>
             {hasWinner && (
               <div className="flex">
-                {fight.stats?.fighterA?.winner && (
+                {fight.winner === "A" && (
                   <ArrowLeft className="w-6 h-6 mt-4 text-green-700 mx-auto" />
                 )}
                 <Crown className="w-6 h-6 mt-4 text-green-700 mx-auto" />
-                {fight.stats?.fighterB?.winner && (
+                {fight.winner === "B" && (
                   <ArrowRight className="w-6 h-6 mt-4 text-green-700 mx-auto" />
                 )}
               </div>
@@ -128,7 +114,7 @@ const Fight = ({ fight: fightProps }: Props) => {
           </div>
           <Fighter
             fighter={fight.fighterB}
-            fightStats={fight.stats?.fighterB}
+            winner={fight.winner && fight.winner === "B"}
             className="text-center justify-center w-1/3 sm:w-2/5"
           />
         </div>
@@ -150,10 +136,7 @@ const Fight = ({ fight: fightProps }: Props) => {
         )}
 
         {statsMode === "fight" ? (
-          <FightStats
-            statsA={fight.stats?.fighterA}
-            statsB={fight.stats?.fighterB}
-          />
+          <FightStats fight={fight} />
         ) : (
           <div className="flex flex-col space-y-2 w-full md:px-10 px-4 mb-4">
             {stats.map((key) => (
@@ -177,17 +160,6 @@ const Fight = ({ fight: fightProps }: Props) => {
             ))}
           </div>
         )}
-
-        {!advencedStatsOpen && statsMode === "fighter" && (
-          <Button
-            size="sm"
-            className="w-fit self-center"
-            onClick={setAdvancetStatsOpen}
-            loading={loading}
-          >
-            Load advanced stats
-          </Button>
-        )}
       </div>
 
       <FighterImage
@@ -195,7 +167,7 @@ const Fight = ({ fight: fightProps }: Props) => {
         position="right"
         classname={cn(
           "hidden sm:flex",
-          fight.stats?.fighterA?.winner && "filter grayscale"
+          fight.winner === "A" && "filter grayscale"
         )}
         stats={fight.stats?.fighterA}
       />

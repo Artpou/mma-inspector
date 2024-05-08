@@ -1,17 +1,17 @@
-import { FightStats as FightStatsType, Fighter as FighterType } from "@/types";
 import { cn } from "@/lib/utils";
 
 import Image from "next/image";
 import FighterOdds from "./FighterOdds";
 import { Crown } from "lucide-react";
+import { TFighter } from "@/types";
 
 interface TitleProps {
-  fighter: FighterType;
-  fightStats?: Partial<FightStatsType>;
+  fighter: TFighter;
+  winner?: boolean;
   className?: string;
 }
 
-export const Fighter = ({ fighter, fightStats, className }: TitleProps) => {
+export const Fighter = ({ fighter, winner, className }: TitleProps) => {
   const recordSplit = !!fighter.record && fighter.record.split("-");
 
   const openFighter = () =>
@@ -37,9 +37,7 @@ export const Fighter = ({ fighter, fightStats, className }: TitleProps) => {
           className="hidden sm:flex items-center hover:underline cursor-pointer"
           onClick={openFighter}
         >
-          {fightStats?.winner && (
-            <Crown className="w-6 h-6 text-green-700 mr-2" />
-          )}
+          {winner === true && <Crown className="w-6 h-6 text-green-700 mr-2" />}
           <span className="block lg:hidden">
             {fighter.shortName || fighter.name}
           </span>
@@ -58,9 +56,9 @@ export const Fighter = ({ fighter, fightStats, className }: TitleProps) => {
               src={fighter.images?.profil}
               className={cn(
                 "rounded-full w-16 h-16 object-cover border mb-2",
-                fightStats?.winner
+                winner === true
                   ? "border-green-700 border-2"
-                  : !!fightStats && "filter grayscale"
+                  : winner === false && "filter grayscale"
               )}
             />
             {fighter.flag && <Flag className="absolute bottom-0 right-0" />}

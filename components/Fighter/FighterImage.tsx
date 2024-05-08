@@ -1,4 +1,3 @@
-import { FightStats, Fighter } from "@/types";
 import { cn } from "@/lib/utils";
 
 import Image from "next/image";
@@ -6,14 +5,15 @@ import Image from "next/image";
 import unknownFighterLeft from "@/public/fighter-unknown-left.png";
 import unknownFighterRight from "@/public/fighter-unknown-right.png";
 import { Badge } from "../ui/badge";
+import { TFight, TFighter } from "@/types";
 
 interface FighterImageProps {
-  fighter: Fighter;
+  fighter: TFighter;
   classname?: string;
   position?: "left" | "right";
   width?: number;
   height?: number;
-  stats?: Partial<FightStats>;
+  stats?: any;
 }
 
 export const FighterImage = ({
