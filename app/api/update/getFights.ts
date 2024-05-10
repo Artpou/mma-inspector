@@ -41,48 +41,8 @@ export async function getFights(
       weight: fight.weight?.text,
       winnerId: fight.competitors.find((c) => c.winner)?.id,
       stats: undefined,
+      status: undefined,
     };
-
-    // const fighter1: Fighter = await getFighter({
-    //   id: fight.competitors[0].id,
-    // });
-    // const fighter2: Fighter = await getFighter({
-    //   id: fight.competitors[1]id,
-    // });
-
-    // if (fight.odds) {
-    //   const oddsData = await fetch(fight.odds["$ref"]);
-    //   const odds = await oddsData.json();
-
-    //   const { homeOdds, awayOdds } = odds.items.reduce(
-    //     (acc: { homeOdds: Odd[]; awayOdds: Odd[] }, item) => {
-    //       acc.homeOdds.push({
-    //         provider: item?.provider.name,
-    //         priority: item?.provider.priority,
-    //         favorite: item?.homeAthleteOdds.favorite,
-    //         value: item?.homeAthleteOdds.moneyLine,
-    //       });
-    //       acc.awayOdds.push({
-    //         provider: item?.provider.name,
-    //         priority: item?.provider.priority,
-    //         favorite: item?.awayAthleteOdds.favorite,
-    //         value: item?.awayAthleteOdds.moneyLine,
-    //       });
-    //       return acc;
-    //     },
-    //     { homeOdds: [], awayOdds: [] }
-    //   );
-
-    //   if (
-    //     odds.items[0]?.homeAthleteOdds.athlete["$ref"].includes(fighter1.id)
-    //   ) {
-    //     fighter1.odds = homeOdds;
-    //     fighter2.odds = awayOdds;
-    //   } else {
-    //     fighter1.odds = awayOdds;
-    //     fighter2.odds = homeOdds;
-    //   }
-    // }
 
     const hasStats =
       !!fight.competitors[0]?.statistics?.["$ref"] &&
@@ -149,6 +109,19 @@ export async function getFights(
         headStrikes: getPartStrikes(fighter2Stats, "Head"),
       };
     }
+
+    if (!fight.status) return data;
+
+    const responseStatus = await fetch(fight.status["$ref"]);
+    const status = await responseStatus.json();
+
+    data.status = {
+      clock: status.clock,
+      round: status.period,
+      name: status.result?.displayName,
+      shortName: status.result?.shortDisplayName,
+      target: status.result?.target?.name,
+    };
 
     return data;
   });

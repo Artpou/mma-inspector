@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Badge } from "../ui/badge";
 import { TEvent, TFight } from "@/types";
+import { cn } from "@/lib/utils";
+import Countdown from "../Countdown";
 
 type Props = {
   event: TEvent;
@@ -9,50 +11,15 @@ type Props = {
 };
 
 const FightShowcase = ({ event, fight }: Props) => {
-  const [timeUntilFight, setTimeUntilFight] = useState("");
-
-  const missing0 = (value: number) => {
-    return value < 10 ? `0${value}` : value;
-  };
-
-  useEffect(() => {
-    const calculateTimeUntilFight = () => {
-      const fightTime = new Date(event.date);
-      const currentTime = new Date();
-
-      if (fightTime < currentTime) {
-        setTimeUntilFight("Finished");
-        return;
-      }
-
-      const timeDifference = fightTime.valueOf() - currentTime.valueOf();
-      // create a new date object to store the time difference
-      const time = new Date(timeDifference);
-
-      const days = time.getUTCDate() - 1;
-      const hours = missing0(time.getUTCHours());
-      const minutes = missing0(time.getUTCMinutes());
-      const seconds = missing0(time.getUTCSeconds());
-
-      // display 00:00:00:00 format
-      setTimeUntilFight(
-        `${days > 0 ? `${days}D ` : ""}${hours}:${minutes}:${seconds}`
-      );
-    };
-
-    calculateTimeUntilFight();
-    const interval = setInterval(calculateTimeUntilFight, 1000);
-
-    return () => {
-      clearInterval(interval);
-    };
-  }, [event.date]);
-
   return (
     <div
       className="dark bg-card text-foreground relative flex items-center text-center flex-col min-h-[370px]"
       style={{
-        background: `linear-gradient(135deg, ${fight.fighterA.color.primary} 0%, rgb(0,0,0) 50%, ${fight.fighterB.color.primary} 100%)`,
+        background: `linear-gradient(135deg, ${
+          fight.winner === "B" ? "#a1a1aa" : fight.fighterA.color.primary
+        } 0%, rgb(0,0,0) 50%, ${
+          fight.winner === "A" ? "#a1a1aa" : fight.fighterB.color.primary
+        } 100%)`,
       }}
     >
       <div className="mt-20 sm:mt-16" />
@@ -71,11 +38,7 @@ const FightShowcase = ({ event, fight }: Props) => {
           fight.fighterA.shortName + " vs " + fight.fighterB.shortName}
       </span>
       <Badge className="z-10 mb-6">{event.titleCategory}</Badge>
-      {!!timeUntilFight && (
-        <span className="text-2xl z-10 font-mono font-bold">
-          {timeUntilFight}
-        </span>
-      )}
+      <Countdown date={event.date} />
       <div className="absolute bottom-0 flex w-full justify-around">
         <div className="flex">
           <Image
@@ -83,7 +46,9 @@ const FightShowcase = ({ event, fight }: Props) => {
             alt={event.title}
             width={300}
             height={300}
-            className="object-cover"
+            className={cn("object-cover", {
+              "filter grayscale": fight.winner === "B",
+            })}
           />
         </div>
         <div className="flex">
@@ -92,7 +57,9 @@ const FightShowcase = ({ event, fight }: Props) => {
             alt={event.title}
             width={300}
             height={300}
-            className="object-cover"
+            className={cn("object-cover", {
+              "filter grayscale": fight.winner === "A",
+            })}
           />
         </div>
       </div>

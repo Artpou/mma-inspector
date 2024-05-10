@@ -14,14 +14,14 @@ export const FightFightersStats = ({ fight, classname }: FightersStatProps) => {
     return (
       <div
         className={cn(
-          "relative w-full h-1 rounded-full bg-muted-foreground",
+          "relative w-full h-1 rounded-full bg-slate-300",
           fight.winner === "B" && "bg-green-700",
           total === 0 && "bg-muted"
         )}
       >
         <div
           className={cn(
-            "absolute h-full rounded-full bg-muted-foreground",
+            "absolute h-full rounded-full bg-slate-300",
             fight.winner === "A" && "bg-green-700"
           )}
           style={{ width: `${percent1}%` }}
@@ -53,7 +53,8 @@ export const FightFightersStats = ({ fight, classname }: FightersStatProps) => {
           key.includes("Attempted") ||
           key.includes("leg") ||
           key.includes("body") ||
-          key.includes("head")
+          key.includes("head") ||
+          (fight.stats.fighterA[key] === 0 && fight.stats.fighterB[key] === 0)
         )
           return null;
 

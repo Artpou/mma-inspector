@@ -38,6 +38,13 @@ export type TFight = Fight & {
     fighterA: any;
     fighterB: any;
   };
+  status?: {
+    name: string;
+    shortName: string;
+    clock: number;
+    round: number;
+    target?: string;
+  };
 };
 
 export type TEvent = Event & {

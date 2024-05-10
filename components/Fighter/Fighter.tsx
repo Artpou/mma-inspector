@@ -3,15 +3,17 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import FighterOdds from "./FighterOdds";
 import { Crown } from "lucide-react";
-import { TFighter } from "@/types";
+import { TFight, TFighter } from "@/types";
+import { Badge } from "../ui/badge";
 
 interface TitleProps {
   fighter: TFighter;
+  stats?: TFight["stats"]["fighterA"];
   winner?: boolean;
   className?: string;
 }
 
-export const Fighter = ({ fighter, winner, className }: TitleProps) => {
+export const Fighter = ({ fighter, winner, className, stats }: TitleProps) => {
   const recordSplit = !!fighter.record && fighter.record.split("-");
 
   const openFighter = () =>
@@ -29,6 +31,25 @@ export const Fighter = ({ fighter, winner, className }: TitleProps) => {
       className={cn("w-auto max-w-6", className)}
     />
   );
+
+  if (stats) {
+    return (
+      <div className="flex flex-col space-y-2">
+        <div className="flex flex-col items-center rounded-full">
+          <Badge className="mb-1">head</Badge>
+          {stats.headStrikes || 0}
+        </div>
+        <div className="flex flex-col items-center rounded-full">
+          <Badge className="mb-1">body</Badge>
+          {stats.bodyStrikes || 0}
+        </div>
+        <div className="flex flex-col items-center rounded-full">
+          <Badge className="mb-1">leg</Badge>
+          {stats.legStrikes || 0}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={cn("flex gap-2 px-0 h-full items-center mb-2", className)}>

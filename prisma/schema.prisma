@@ -58,6 +58,7 @@ model Fight {
   titleShot   Boolean
   stats       Json?
   matchNumber Int?
+  status      Json?
   fighters    FightsOnFighters[]
   winner      Fighter?           @relation(fields: [winnerId], references: [id])
   event       Event              @relation(fields: [eventId], references: [id])

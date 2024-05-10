@@ -16,10 +16,17 @@ import Loader from "@/components/Loader";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
-import { useMutation, useQuery, useQueryClient } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { getCountryCode, getEmojiFlag } from "countries-list";
 import Header from "./Header";
 import FightShowcase from "@/components/Fight/FightShowcase";
+
+type TItem = {
+  organization: string;
+  schedule: string;
+  events: TEvent[];
+  mainFight: TFight;
+};
 
 const Fight = dynamic(() => import("@/components/Fight/Fight"));
 
@@ -31,7 +38,6 @@ export default function Home() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
-  const queryClient = useQueryClient();
 
   const organization = isOrganization(searchParams.get("organization"))
     ? searchParams.get("organization")
@@ -41,19 +47,12 @@ export default function Home() {
     : "upcoming";
 
   const [index, setIndex] = useState(0);
-  const [events, setEvents] = useState<TEvent[]>([]);
-  const [mainFights, setMainFights] = useState<
-    {
-      organization: string;
-      schedule: string;
-      fight: TFight;
-    }[]
-  >([]);
-
-  const mainFight = mainFights.find(
-    (mainFight) =>
-      mainFight.organization === organization && mainFight.schedule === schedule
+  const [items, setItems] = useState<TItem[]>([]);
+  const selected = items.find(
+    (event) =>
+      event.organization === organization && event.schedule === schedule
   );
+  const { events, mainFight } = selected || {};
 
   const { isFetching } = useQuery({
     queryKey: ["events", organization, schedule],
@@ -62,20 +61,36 @@ export default function Home() {
         `/api/events?organization=${organization}&schedule=${schedule}&page=${index}`
       );
       const events: TEvent[] = await response.json();
+      let newMainFight: TFight | undefined;
 
-      if (!mainFight) {
-        const newMainFightResponse = await fetch(
-          `/api/fights?event=${events[0].id}`
-        );
-        const newMainFight: TFight[] = await newMainFightResponse.json();
+      if (!selected || !selected.mainFight) {
+        const fightsResponse = await fetch(`/api/fights?event=${events[0].id}`);
+        const fights = await fightsResponse.json();
 
-        setMainFights((prev) => [
-          ...prev,
-          { organization, schedule, fight: newMainFight[0] },
-        ]);
+        newMainFight = fights[0];
       }
 
-      setEvents(events);
+      setItems((prev) => {
+        const newItems = [...prev];
+        const index = newItems.findIndex(
+          (event) =>
+            event.organization === organization && event.schedule === schedule
+        );
+
+        if (index === -1) {
+          newItems.push({
+            organization,
+            schedule,
+            events,
+            mainFight: newMainFight,
+          });
+        } else {
+          newItems[index].events = events;
+          newItems[index].mainFight = newMainFight;
+        }
+
+        return newItems;
+      });
     },
     staleTime: 1000 * 60 * 2,
     enabled: !!organization && !!schedule,
@@ -90,20 +105,40 @@ export default function Home() {
     );
     const newEvents: TEvent[] = await response.json();
 
-    setEvents((prev) => [...prev, ...newEvents]);
+    setItems((prev) => {
+      const newItems = [...prev];
+      const index = newItems.findIndex(
+        (event) =>
+          event.organization === organization && event.schedule === schedule
+      );
+
+      if (index !== -1) {
+        newItems[index].events.push(...newEvents);
+      }
+
+      return newItems;
+    });
   });
 
   const { mutate: loadFight } = useMutation({
     mutationFn: async (id: string) => {
-      if (events[id].fights) return;
-
-      const response = await fetch(`/api/fights?event=${events?.[id]?.id}`);
+      if (!events?.[id]) return;
+      if (!!events[id].fights) return events[id].fights;
+      const response = await fetch(`/api/fights?event=${events[id].id}`);
       const fights = await response.json();
 
-      setEvents((prev) => {
-        const newEvents = [...prev];
-        if (newEvents[id]) newEvents[id].fights = fights;
-        return newEvents;
+      setItems((prev) => {
+        const newItems = [...prev];
+        const index = newItems.findIndex(
+          (event) =>
+            event.organization === organization && event.schedule === schedule
+        );
+
+        if (index !== -1) {
+          newItems[index].events[id].fights = fights;
+        }
+
+        return newItems;
       });
     },
   });
@@ -165,7 +200,6 @@ export default function Home() {
   return (
     <main className="flex flex-col">
       <ScrollButton />
-
       <Header
         organization={organization}
         schedule={schedule}
@@ -174,7 +208,7 @@ export default function Home() {
       />
 
       {!!events?.[0] && !!mainFight ? (
-        <FightShowcase fight={mainFight.fight} event={events[0]} />
+        <FightShowcase fight={mainFight} event={events[0]} />
       ) : (
         <div className="h-12" />
       )}
@@ -189,11 +223,7 @@ export default function Home() {
             className="flex flex-col items-center w-full"
             type="single"
             collapsible
-            onValueChange={(value) => {
-              if (!!value && !events[value].fights) {
-                loadFight(value);
-              }
-            }}
+            onValueChange={loadFight}
           >
             {!!events &&
               events.map((event, index) => (
@@ -267,7 +297,7 @@ export default function Home() {
           </Accordion>
         )}
       </div>
-      {!isFetching && events?.length === (index + 1) * 10 && (
+      {!isFetching && items?.length === (index + 1) * 10 && (
         <Button
           size="lg"
           className="flex-center self-center"

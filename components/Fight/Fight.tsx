@@ -13,6 +13,8 @@ import { TabsList } from "@radix-ui/react-tabs";
 import FightStats from "./FightStats";
 import { ArrowLeft, ArrowRight, Crown } from "lucide-react";
 import { TFight, TFighter } from "@/types";
+import { secondsToTimeFormat } from "../utils/date";
+import { Switch } from "../ui/switch";
 
 interface Props {
   fight: TFight;
@@ -22,6 +24,7 @@ const stats: (keyof TFighter)[] = ["height", "weight", "age", "reach"];
 
 const Fight = ({ fight }: Props) => {
   const [statsMode, setStatsMode] = useState<"fighter" | "fight">();
+  const [showFighterStats, setShowFighterStats] = useState(false);
 
   const fighterAOdds = fight.fighterA.odds?.[0]?.value;
   const fighterBOdds = fight.fighterB.odds?.[0]?.value;
@@ -79,14 +82,64 @@ const Fight = ({ fight }: Props) => {
             )}
           />
         </div>
+
+        {fight.status && (
+          <div className="flex-center flex-col my-2 justify-center">
+            <div className="flex items-center space-x-2">
+              <span className="sm:hidden">{fight.status.name}</span>
+              <h2 className="hidden sm:block">{fight.status.name}</h2>
+              {fight.status.target && (
+                <>
+                  <span className="sm:hidden">
+                    {" "}
+                    -{" "}
+                    {fight.status.target.charAt(0).toUpperCase() +
+                      fight.status.target.slice(1)}
+                  </span>
+                  <h2 className="hidden sm:block">
+                    {" "}
+                    -{" "}
+                    {fight.status.target.charAt(0).toUpperCase() +
+                      fight.status.target.slice(1)}
+                  </h2>
+                </>
+              )}
+            </div>
+            <div className="flex font-light text-muted-foreground space-x-2">
+              <span>{fight.status.round} round</span>
+              <span> - </span>
+              <span>{secondsToTimeFormat(fight.status.clock)}</span>
+            </div>
+          </div>
+        )}
+
         <div className="flex w-full justify-around sm:items-center gap-4 mb-2">
           <Fighter
             fighter={fight.fighterA}
+            stats={showFighterStats && fight.stats?.fighterA}
             winner={fight.winner && fight.winner === "A"}
             className="text-center justify-center w-1/3 sm:w-2/5"
           />
           <span className="hidden sm:flex-center">VS</span>
-          <div className="flex flex-col sm:hidden text-center justify-center text-sm">
+          <div className="flex flex-col sm:hidden text-center justify-evenly text-sm">
+            {hasWinner && (
+              <div className="flex">
+                {fight.winner === "A" && (
+                  <ArrowLeft className="w-6 h-6 text-green-700 mx-auto" />
+                )}
+                <Crown className="w-6 h-6 text-green-700 mx-auto" />
+                {fight.winner === "B" && (
+                  <ArrowRight className="w-6 h-6 text-green-700 mx-auto" />
+                )}
+              </div>
+            )}
+            <div className="flex-center flex-col space-y-1">
+              <span className="">body hits</span>
+              <Switch
+                checked={showFighterStats}
+                onCheckedChange={setShowFighterStats}
+              />
+            </div>
             <div>
               <span
                 className={fighterAOdds < 0 ? "text-green-700" : "text-red-700"}
@@ -100,25 +153,14 @@ const Fight = ({ fight }: Props) => {
                 {fighterBOdds}
               </span>
             </div>
-            {hasWinner && (
-              <div className="flex">
-                {fight.winner === "A" && (
-                  <ArrowLeft className="w-6 h-6 mt-4 text-green-700 mx-auto" />
-                )}
-                <Crown className="w-6 h-6 mt-4 text-green-700 mx-auto" />
-                {fight.winner === "B" && (
-                  <ArrowRight className="w-6 h-6 mt-4 text-green-700 mx-auto" />
-                )}
-              </div>
-            )}
           </div>
           <Fighter
             fighter={fight.fighterB}
+            stats={showFighterStats && fight.stats?.fighterB}
             winner={fight.winner && fight.winner === "B"}
             className="text-center justify-center w-1/3 sm:w-2/5"
           />
         </div>
-
         {!!fight?.stats && haveStats && (
           <div className="flex w-full justify-center">
             <Tabs
@@ -134,7 +176,6 @@ const Fight = ({ fight }: Props) => {
             </Tabs>
           </div>
         )}
-
         {statsMode === "fight" ? (
           <FightStats fight={fight} />
         ) : (

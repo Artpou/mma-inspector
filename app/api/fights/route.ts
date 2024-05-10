@@ -5,14 +5,14 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(
   request: NextRequest
 ): Promise<NextResponse<TFight[]>> {
-  const event = request.nextUrl.searchParams.get("event");
+  const eventId = request.nextUrl.searchParams.get("event");
 
-  if (!event) {
+  if (!eventId) {
     throw new Error("Event not found");
   }
 
   const data = await prisma.fight.findMany({
-    where: { eventId: event },
+    where: { eventId },
     include: {
       winner: true,
       fighters: {
