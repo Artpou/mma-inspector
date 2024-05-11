@@ -15,7 +15,6 @@ function Darkmode({ className }: Props) {
       false
   );
 
-  console.log("🚀 ~ Darkmode ~ dark:", dark);
   useEffect(() => {
     if (typeof window === "undefined") return;
 
