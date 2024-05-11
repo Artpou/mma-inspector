@@ -9,6 +9,7 @@ import { TFight, TFighter } from "@/types";
 
 interface FighterImageProps {
   fighter: TFighter;
+  display?: "advanced" | "simple";
   classname?: string;
   position?: "left" | "right";
   width?: number;
@@ -18,6 +19,7 @@ interface FighterImageProps {
 
 export const FighterImage = ({
   fighter,
+  display = "advanced",
   classname,
   position = "left",
   width = 150,
@@ -27,15 +29,22 @@ export const FighterImage = ({
   <div
     className={cn(
       "flex justify-center space-x-8",
-      position === "left" && "flex-row-reverse"
+      position === "left" && "flex-row-reverse",
+      display === "simple" && "items-center"
     )}
   >
     <Image
       className={cn("h-fit w-150 max-h-[450px] object-contain", classname)}
       src={
-        position === "left"
-          ? fighter.images?.left || fighter.images?.right || unknownFighterLeft
-          : fighter.images?.right || fighter.images?.left || unknownFighterRight
+        display === "advanced"
+          ? position === "left"
+            ? fighter.images?.left ||
+              fighter.images?.right ||
+              unknownFighterLeft
+            : fighter.images?.right ||
+              fighter.images?.left ||
+              unknownFighterRight
+          : fighter.images.profil
       }
       width={width}
       height={height}

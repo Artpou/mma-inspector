@@ -18,13 +18,13 @@ import { Switch } from "../ui/switch";
 
 interface Props {
   fight: TFight;
+  display?: "advanced" | "simple";
 }
 
 const stats: (keyof TFighter)[] = ["height", "weight", "age", "reach"];
 
-const Fight = ({ fight }: Props) => {
+const Fight = ({ fight, display = "advanced" }: Props) => {
   const [statsMode, setStatsMode] = useState<"fighter" | "fight">();
-  const [showFighterStats, setShowFighterStats] = useState(false);
 
   const fighterAOdds = fight.fighterA.odds?.[0]?.value;
   const fighterBOdds = fight.fighterB.odds?.[0]?.value;
@@ -42,8 +42,14 @@ const Fight = ({ fight }: Props) => {
   }, [fight, statsMode, haveStats]);
 
   return (
-    <div className="flex justify-evenly sm:min-h-[300px]">
+    <div
+      className={cn(
+        "flex justify-evenly py-2 sm:py-6 px-2",
+        display === "advanced" && "sm:min-h-[300px]"
+      )}
+    >
       <FighterImage
+        display={display}
         fighter={fight.fighterA}
         classname={cn(
           "hidden sm:flex",
@@ -71,9 +77,11 @@ const Fight = ({ fight }: Props) => {
           />
           <div className="flex flex-col items-center">
             <span className="text-center sm:min-w-40">{fight.type}</span>
-            <span className="font-light text-muted-foreground">
-              {fight.description}
-            </span>
+            {display === "advanced" && (
+              <span className="font-light text-muted-foreground">
+                {fight.description}
+              </span>
+            )}
           </div>
           <Separator
             className={cn(
@@ -118,7 +126,6 @@ const Fight = ({ fight }: Props) => {
         <div className="flex w-full justify-around sm:items-center gap-4 mb-2">
           <Fighter
             fighter={fight.fighterA}
-            stats={showFighterStats && fight.stats?.fighterA}
             winner={fight.winner && fight.winner === "A"}
             className="text-center justify-center w-1/3 sm:w-2/5"
           />
@@ -135,13 +142,6 @@ const Fight = ({ fight }: Props) => {
                 )}
               </div>
             )}
-            <div className="flex-center flex-col space-y-1">
-              <span className="">body hits</span>
-              <Switch
-                checked={showFighterStats}
-                onCheckedChange={setShowFighterStats}
-              />
-            </div>
             <div>
               <span
                 className={fighterAOdds < 0 ? "text-green-700" : "text-red-700"}
@@ -158,12 +158,11 @@ const Fight = ({ fight }: Props) => {
           </div>
           <Fighter
             fighter={fight.fighterB}
-            stats={showFighterStats && fight.stats?.fighterB}
             winner={fight.winner && fight.winner === "B"}
             className="text-center justify-center w-1/3 sm:w-2/5"
           />
         </div>
-        {!!fight?.stats && haveStats && (
+        {display === "advanced" && !!fight?.stats && haveStats && (
           <div className="flex w-full justify-center">
             <Tabs
               value={statsMode || "fighter"}
@@ -178,9 +177,10 @@ const Fight = ({ fight }: Props) => {
             </Tabs>
           </div>
         )}
-        {statsMode === "fight" ? (
+        {display === "advanced" && statsMode === "fight" && (
           <FightStats fight={fight} />
-        ) : (
+        )}
+        {display === "advanced" && statsMode === "fighter" && (
           <div className="flex flex-col space-y-2 w-full md:px-10 px-4 mb-4">
             {stats.map((key) => (
               <FightFightersStats
@@ -206,6 +206,7 @@ const Fight = ({ fight }: Props) => {
       </div>
 
       <FighterImage
+        display={display}
         fighter={fight.fighterB}
         position="right"
         classname={cn(

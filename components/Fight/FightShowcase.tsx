@@ -16,15 +16,15 @@ const FightShowcase = ({ event, fight }: Props) => {
     <div
       className="dark bg-card text-foreground relative flex items-center text-center flex-col h-[370px]"
       style={{
-        background: `linear-gradient(135deg, ${
+        background: `linear-gradient(105deg, ${
           fight?.winner === "B"
             ? "#a1a1aa"
             : fight?.fighterA.color.primary || "#000"
-        } 0%, rgb(0,0,0) 50%, ${
+        } 20%, rgb(0,0,0) 50%, ${
           fight?.winner === "A"
             ? "#a1a1aa"
             : fight?.fighterB.color.primary || "#000"
-        } 100%)`,
+        } 80%)`,
       }}
     >
       {fight && event ? (

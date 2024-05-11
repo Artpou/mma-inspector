@@ -10,6 +10,10 @@ import Loader from "@/components/Loader";
 import { TEvent, TFight } from "@/types";
 import { getCountryCode, getEmojiFlag } from "countries-list";
 import dynamic from "next/dynamic";
+import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
+import { useState } from "react";
+import { Button } from "../ui/button";
+import { Share2 } from "lucide-react";
 
 const Fight = dynamic(() => import("@/components/Fight/Fight"));
 
@@ -21,6 +25,8 @@ type Props = {
 };
 
 function EventItem({ index, event, fights, isFetching }: Props) {
+  const [display, setDisplay] = useState<"advanced" | "simple">("advanced");
+
   const formattedDate = (value: string) => {
     const date = new Date(value);
     return `${date.toLocaleDateString()} ${date
@@ -108,10 +114,27 @@ function EventItem({ index, event, fights, isFetching }: Props) {
         </div>
       </AccordionTrigger>
       <AccordionContent className="sm:px-4">
+        <div className="flex mx-4 space-x-2">
+          <Tabs
+            value={display}
+            onValueChange={(value) =>
+              setDisplay(value as "advanced" | "simple")
+            }
+          >
+            <TabsList>
+              <TabsTrigger value="advanced">Advanced</TabsTrigger>
+              <TabsTrigger value="simple">Simple</TabsTrigger>
+            </TabsList>
+          </Tabs>
+          <Button disabled>
+            <Share2 className="mr-2" size={16} />
+            <span>Share</span>
+          </Button>
+        </div>
         {fights &&
           fights.map((fight, key) => (
-            <div key={key} className="py-6 px-2">
-              <Fight fight={fight} />
+            <div key={key} className="">
+              <Fight fight={fight} display={display} />
             </div>
           ))}
         {isFetching && <Loader />}
