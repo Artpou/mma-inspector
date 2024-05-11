@@ -24,8 +24,8 @@ const Countdown = ({ date }) => {
       const time = new Date(timeDifference);
 
       setDays(String(time.getUTCDate() - 1));
-      setHours(missing0(time.getUTCMinutes()));
-      setMinutes(missing0(time.getUTCHours()));
+      setHours(missing0(time.getUTCHours()));
+      setMinutes(missing0(time.getUTCMinutes()));
       setSeconds(missing0(time.getUTCSeconds()));
     };
 
@@ -46,7 +46,7 @@ const Countdown = ({ date }) => {
   }
 
   return (
-    <div className="flex items-center z-10 bg-[hsla(0,0%,0%,0.5)] rounded-md px-2 py-1 gap-4 justify-center">
+    <div className="flex items-center z-10 bg-[hsla(0,0%,0%,0.7)] rounded-md px-2 py-1 gap-4 justify-center">
       {parseInt(date) > 0 && (
         <div className="flex-center flex-col">
           <span>{days}</span>

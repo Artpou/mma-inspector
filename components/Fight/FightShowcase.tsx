@@ -14,7 +14,7 @@ type Props = {
 const FightShowcase = ({ event, fight }: Props) => {
   return (
     <div
-      className="dark bg-card text-foreground relative flex items-center text-center flex-col h-[370px]"
+      className="dark bg-card text-foreground relative flex-center text-center flex-col min-h-[280px] sm:min-h-[370px] pb-8 pt-16"
       style={{
         background: `linear-gradient(105deg, ${
           fight?.winner === "B"
@@ -29,7 +29,6 @@ const FightShowcase = ({ event, fight }: Props) => {
     >
       {fight && event ? (
         <>
-          <div className="mt-20 sm:mt-16" />
           <Image
             width={56}
             height={56}
@@ -56,6 +55,7 @@ const FightShowcase = ({ event, fight }: Props) => {
                 className={cn("", {
                   "filter grayscale": fight.winner === "B",
                 })}
+                priority
               />
             </div>
             <div className="flex">
@@ -67,6 +67,7 @@ const FightShowcase = ({ event, fight }: Props) => {
                 className={cn("", {
                   "filter grayscale": fight.winner === "A",
                 })}
+                priority
               />
             </div>
           </div>

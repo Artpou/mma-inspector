@@ -44,7 +44,7 @@ const Fight = ({ fight, display = "advanced" }: Props) => {
   return (
     <div
       className={cn(
-        "flex justify-evenly py-2 sm:py-6 px-2",
+        "flex justify-evenly sm:py-6 px-2",
         display === "advanced" && "sm:min-h-[300px]"
       )}
     >
@@ -58,7 +58,7 @@ const Fight = ({ fight, display = "advanced" }: Props) => {
         stats={fight.stats?.fighterB}
       />
 
-      <div className="flex flex-col w-full max-w-2xl mx-4">
+      <div className="flex flex-col w-full max-w-2xl mx-2 sm:mx-4">
         {fight.titleShot && (
           <Image
             src={BeltPng}

@@ -25,7 +25,7 @@
     --accent: 240 4.8% 95.9%;
     --accent-foreground: 240 5.9% 10%;
 
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 91% 43%;
     --destructive-foreground: 0 0% 98%;
 
     --border: 240 5.9% 90%;
@@ -44,9 +44,6 @@
 
     --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
-
-    --primary: 0 0% 98%;
-    --primary-foreground: 240 5.9% 10%;
 
     --secondary: 240 3.7% 15.9%;
     --secondary-foreground: 0 0% 98%;
@@ -82,11 +79,6 @@
   h2 {
     @apply font-medium;
     @apply text-xl;
-  }
-
-  a {
-    @apply text-red-700;
-    @apply hover:text-red-900;
   }
 
   .flex-center {

@@ -1,37 +1,32 @@
-import {
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 
-import Loader from "@/components/Loader";
-import { TEvent, TFight } from "@/types";
+import { TEvent } from "@/types";
 import { getCountryCode, getEmojiFlag } from "countries-list";
 import dynamic from "next/dynamic";
-import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
-import { useState } from "react";
-import { Button } from "../ui/button";
-import { Share2 } from "lucide-react";
-
-const Fight = dynamic(() => import("@/components/Fight/Fight"));
+import { ChevronRight } from "lucide-react";
+import { cn } from "@/lib/utils";
+import Link from "next/link";
+import { flagEmoji } from "../utils/string";
 
 type Props = {
   event: TEvent;
-  fights: TFight[];
-  index: number;
-  isFetching: boolean;
+  className?: string;
 };
 
-function EventItem({ index, event, fights, isFetching }: Props) {
-  const [display, setDisplay] = useState<"advanced" | "simple">("advanced");
-
+function EventItem({ event, className }: Props) {
   const formattedDate = (value: string) => {
-    const date = new Date(value);
-    return `${date.toLocaleDateString()} ${date
-      .toLocaleTimeString()
-      .slice(0, -3)}`;
+    return new Date(value).toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+    });
+  };
+
+  const formattedHours = (value: string) => {
+    return new Date(value).toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "numeric",
+    });
   };
 
   const inHowManyDays = (date: string) => {
@@ -52,94 +47,56 @@ function EventItem({ index, event, fights, isFetching }: Props) {
     return;
   };
 
-  const flagEmoji = (country: string) => {
-    if (!country) return "";
-
-    const formattedCountry = country
-      .replace("USA", "United States")
-      .replace("England", "United Kingdom");
-
-    let isoCountry = getCountryCode(formattedCountry);
-    return isoCountry !== false ? getEmojiFlag(isoCountry) : "";
-  };
-
   return (
-    <AccordionItem
-      className="bg-card rounded-lg shadow-md w-full max-w-7xl mb-4"
-      key={index}
-      value={"" + index}
+    <Link
+      href={`/events/${event.id}`}
+      className={cn(
+        "flex w-full border-b bg-card rounded-lg shadow-md mb-4 p-2 pl-4 cursor-pointer",
+        className
+      )}
+      scroll={false}
     >
-      <AccordionTrigger className="px-4">
-        <Image
-          width={56}
-          height={56}
-          src={`/organization/${event.organization}.png`}
-          alt={event.title}
-          className="hidden sm:block mr-4 rounded-sm"
-        />
-        <div className="flex justify-between items-center w-full min-h-24 py-2">
-          <div className="flex flex-col items-start">
-            <span className="text-lg text-start mb-1">{event.title}</span>
-            {!!event.description && (
-              <div className="flex items-center">
-                <span className="flex sm:font-normal text-sm">
-                  {event.description}
-                </span>
-                {!!event.titleCategory && (
-                  <Badge className="ml-2 hidden sm:block">
-                    {event.titleCategory}
-                  </Badge>
-                )}
-              </div>
-            )}
-            <span className="block sm:hidden mt-0 text-xs font-normal">
-              {event.titleCategory}
-            </span>
+      <Image
+        width={56}
+        height={56}
+        src={`/organization/${event.organization}.png`}
+        alt={event.title}
+        className="hidden sm:block mr-4 rounded-sm object-contain"
+      />
+      <div className="flex justify-between items-center w-full min-h-24 py-2">
+        <div className="flex flex-col w-3/5 items-start">
+          <span className="text-lg font-medium text-start">{event.title}</span>
+          {!!event.description && (
+            <span className="sm:font-normal text-sm">{event.description}</span>
+          )}
+          <span className="mt-1 text-xs font-normal">
+            {event.titleCategory}
+          </span>
+          {(!!event.country || !!event.city) && (
             <div className="flex items-center mt-1">
-              <span className="truncate font-normal text-sm text-muted-foreground">
+              <span className="font-normal text-sm text-muted-foreground">
                 {flagEmoji(event.country)} {event.city}, {event.country}
               </span>
             </div>
-          </div>
-          <div className="flex flex-col space-y-1 items-center sm:items-end px-4 min-w-28 sm:min-w-fit">
+          )}
+        </div>
+
+        <div className="flex-center w-2/5 sm:w-fit justify-end sm:px-4 min-w-28 sm:min-w-fit">
+          <div className="flex-center flex-col space-y-1 mr-4">
             <Badge className={dateColor(inHowManyDays(event.date))}>
               {inHowManyDays(event.date)}
             </Badge>
-            <span className="hidden sm:block">{formattedDate(event.date)}</span>
-            <span className="font-normal text-sm">
-              {event.fightsNumber} fight
-              {event.fightsNumber > 1 && "s"}
+            <span className="font-medium text-sm">
+              {formattedDate(event.date)}
+            </span>
+            <span className="mt-1 text-xs sm:font-normal">
+              {formattedHours(event.date)}
             </span>
           </div>
+          <ChevronRight className="w-4 h-4 sm:block mr-2" />
         </div>
-      </AccordionTrigger>
-      <AccordionContent className="sm:px-4">
-        <div className="flex mx-4 space-x-2">
-          <Tabs
-            value={display}
-            onValueChange={(value) =>
-              setDisplay(value as "advanced" | "simple")
-            }
-          >
-            <TabsList>
-              <TabsTrigger value="advanced">Advanced</TabsTrigger>
-              <TabsTrigger value="simple">Simple</TabsTrigger>
-            </TabsList>
-          </Tabs>
-          <Button disabled>
-            <Share2 className="mr-2" size={16} />
-            <span>Share</span>
-          </Button>
-        </div>
-        {fights &&
-          fights.map((fight, key) => (
-            <div key={key} className="">
-              <Fight fight={fight} display={display} />
-            </div>
-          ))}
-        {isFetching && <Loader />}
-      </AccordionContent>
-    </AccordionItem>
+      </div>
+    </Link>
   );
 }
 

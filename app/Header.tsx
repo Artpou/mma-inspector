@@ -10,7 +10,10 @@ import { cn } from "@/lib/utils";
 import { ORGANIZATIONS } from "@/types";
 import dynamic from "next/dynamic";
 import React, { useEffect, useState } from "react";
-import Darkmode from "@/components/Darkmode";
+import Image from "next/image";
+import { Ellipsis } from "lucide-react";
+
+const Darkmode = dynamic(() => import("@/components/Darkmode"), { ssr: false });
 
 interface Props {
   organization: string;
@@ -44,8 +47,8 @@ const Header = ({
   return (
     <div
       className={cn(
-        "fixed z-30 top-0 p-2 items-center w-full transition-all duration-300",
-        isTop ? "" : "bg-card"
+        "fixed z-30 top-0 p-2 items-center w-full transition-colors duration-300",
+        isTop ? "" : "bg-card border"
       )}
     >
       <div className="flex items-center content-center w-full max-w-7xl mx-auto">
@@ -54,7 +57,20 @@ const Header = ({
             name="organization_select"
             className="flex sm:hidden w-full sm:w-48"
           >
-            <SelectValue />
+            <div className="flex-center">
+              {organization !== "all" ? (
+                <Image
+                  width={24}
+                  height={24}
+                  src={`/organization/${organization}.png`}
+                  alt={organization}
+                  className="mr-2 rounded-sm"
+                />
+              ) : (
+                <Ellipsis className="h-6 w-6 mr-2" />
+              )}
+              <SelectValue />
+            </div>
           </SelectTrigger>
           <SelectContent>
             {ORGANIZATIONS.map((org) => (

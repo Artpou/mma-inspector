@@ -18,7 +18,7 @@ export default function Home() {
 
   const organization = isOrganization(searchParams.get("organization"))
     ? (searchParams.get("organization") as TOrganization)
-    : "all";
+    : "ufc";
 
   const schedule = isSchedule(searchParams.get("schedule"))
     ? (searchParams.get("schedule") as TSchedule)

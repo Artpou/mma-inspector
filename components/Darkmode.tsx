@@ -15,6 +15,7 @@ function Darkmode({ className }: Props) {
       false
   );
 
+  console.log("🚀 ~ Darkmode ~ dark:", dark);
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -26,6 +27,8 @@ function Darkmode({ className }: Props) {
       sessionStorage.setItem("darkMode", "false");
     }
   }, [dark]);
+
+  if (typeof window === "undefined") return null;
 
   return (
     <div

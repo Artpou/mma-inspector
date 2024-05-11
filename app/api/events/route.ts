@@ -15,8 +15,8 @@ export async function GET(request: NextRequest) {
     orderBy: {
       date: schedule === "upcoming" ? "asc" : "desc",
     },
-    skip: Number(page) * 10 || 0,
-    take: 10,
+    skip: Number(page) * 20 || 0,
+    take: 20,
   });
 
   return NextResponse.json(events);

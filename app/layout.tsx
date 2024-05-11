@@ -7,6 +7,7 @@ import ReactQueryProvider from "./provider/ReactQueryProvider";
 import { Suspense } from "react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import Placeholder from "./placeholder";
+import { Github, Linkedin } from "lucide-react";
 
 const fontSans = Inter({
   subsets: ["latin"],
@@ -44,10 +45,24 @@ export default function RootLayout({
             <div>
               <span className="mr-1">Built by</span>
               <a
-                href="https://github.com/artpou"
+                href="https://arthur-poullin.netlify.app/"
                 className="text-foreground font-medium"
               >
-                Artpou
+                Arthur Poullin
+              </a>
+            </div>
+            <div className="flex-center gap-2">
+              <a
+                href="https://github.com/artpou"
+                className="flex-center rounded-full w-10 h-10 bg-black hover:bg-gray-800 text-white"
+              >
+                <Github />
+              </a>
+              <a
+                href="https://linkedin.com/in/artpou"
+                className="flex-center rounded-full w-10 h-10 bg-black hover:bg-gray-800 text-white"
+              >
+                <Linkedin />
               </a>
             </div>
           </footer>
