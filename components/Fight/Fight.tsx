@@ -83,14 +83,14 @@ const Fight = ({ fight }: Props) => {
           />
         </div>
 
-        {fight.status && (
-          <div className="flex-center flex-col my-2 justify-center">
+        {hasWinner && fight.status && (
+          <div className="flex-center flex-col my-2 justify-center sm:mb-4">
             <div className="flex items-center space-x-2">
-              <span className="sm:hidden">{fight.status.name}</span>
+              <span className="font-medium sm:hidden">{fight.status.name}</span>
               <h2 className="hidden sm:block">{fight.status.name}</h2>
               {fight.status.target && (
                 <>
-                  <span className="sm:hidden">
+                  <span className="sm:hidden font-medium">
                     {" "}
                     -{" "}
                     {fight.status.target.charAt(0).toUpperCase() +
@@ -105,11 +105,13 @@ const Fight = ({ fight }: Props) => {
                 </>
               )}
             </div>
-            <div className="flex font-light text-muted-foreground space-x-2">
-              <span>{fight.status.round} round</span>
-              <span> - </span>
-              <span>{secondsToTimeFormat(fight.status.clock)}</span>
-            </div>
+            {!fight.status.name.includes("Decision") && (
+              <div className="flex font-light text-muted-foreground space-x-2">
+                <span>{fight.status.round} round</span>
+                <span> - </span>
+                <span>{secondsToTimeFormat(fight.status.clock)}</span>
+              </div>
+            )}
           </div>
         )}
 

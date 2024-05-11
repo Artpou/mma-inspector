@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useEffect } from "react";
-import { Switch } from "./ui/switch";
-import { Moon, Sun, SunDim } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { Moon, Sun } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -10,11 +9,15 @@ interface Props {
 }
 
 function Darkmode({ className }: Props) {
-  const [dark, setDark] = React.useState(
-    window.sessionStorage.getItem("darkMode") === "true"
+  const [dark, setDark] = useState(
+    (typeof window !== "undefined" &&
+      window.sessionStorage.getItem("darkMode") === "true") ||
+      false
   );
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+
     if (dark) {
       document.documentElement.classList.add("dark");
       window.sessionStorage.setItem("darkMode", "true");
@@ -38,17 +41,6 @@ function Darkmode({ className }: Props) {
         )}
       />
     </div>
-  );
-
-  return (
-    <Switch
-      checked={dark}
-      onClick={() => setDark((prev) => !prev)}
-      className={cn("!bg-red", className)}
-      dotClassName={!dark && "bg-yellow-400"}
-    >
-      {dark ? <Moon className="w-5 h-5" /> : <SunDim className="w-5 h-5" />}
-    </Switch>
   );
 }
 

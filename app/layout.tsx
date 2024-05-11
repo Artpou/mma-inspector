@@ -6,6 +6,7 @@ import Image from "next/image";
 import ReactQueryProvider from "./provider/ReactQueryProvider";
 import { Suspense } from "react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import Placeholder from "./placeholder";
 
 const fontSans = Inter({
   subsets: ["latin"],
@@ -34,39 +35,23 @@ export default function RootLayout({
           fontSans.variable
         )}
       >
-        <Suspense>
+        <Suspense fallback={<Placeholder />}>
           <ReactQueryProvider>
             {children}
             <SpeedInsights />
           </ReactQueryProvider>
+          <footer className="flex flex-col gap-3 mb-2 text-center text-sm text-muted-foreground py-4">
+            <div>
+              <span className="mr-1">Built by</span>
+              <a
+                href="https://github.com/artpou"
+                className="text-foreground font-medium"
+              >
+                Artpou
+              </a>
+            </div>
+          </footer>
         </Suspense>
-        <footer className="flex flex-col gap-3 mb-2 text-center text-sm text-muted-foreground py-4">
-          <div>
-            <span className="mr-1">Built by</span>
-            <a
-              href="https://github.com/artpou"
-              className="text-foreground font-medium"
-            >
-              Artpou
-            </a>
-          </div>
-          <div className="flex-center">
-            <span className="mr-2">Using the API of</span>
-            <a
-              href="https://www.espn.com/"
-              target="_blank"
-              className="bg-[#DD0000] p-1 rounded-sm"
-            >
-              <Image
-                width={82}
-                height={20}
-                src="https://a.espncdn.com/redesign/assets/img/logos/logo-espn-82x20.png"
-                alt="ESPN Logo"
-                className="inline"
-              />
-            </a>
-          </div>
-        </footer>
       </body>
     </html>
   );

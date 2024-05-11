@@ -44,3 +44,6 @@ next-env.d.ts
 
 # dump
 dump.sql
+
+# env
+.env

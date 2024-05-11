@@ -6,17 +6,23 @@ export async function GET(
   request: NextRequest
 ): Promise<NextResponse<TFight[]>> {
   const eventId = request.nextUrl.searchParams.get("event");
+  const onlyMain = request.nextUrl.searchParams.get("onlyMain") === "true";
 
   if (!eventId) {
     throw new Error("Event not found");
   }
 
   const data = await prisma.fight.findMany({
-    where: { eventId },
+    where: onlyMain ? { eventId, matchNumber: 1 } : { eventId },
     include: {
-      winner: true,
+      winner: {
+        select: {
+          id: true,
+        },
+      },
       fighters: {
-        include: {
+        select: {
+          fighterId: true,
           fighter: {
             include: {
               odds: true,
@@ -29,6 +35,8 @@ export async function GET(
       matchNumber: "asc",
     },
   });
+
+  let endDat = performance.now();
 
   const fights = data.map((fight) => {
     const more = {

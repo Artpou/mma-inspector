@@ -10,10 +10,7 @@ import { cn } from "@/lib/utils";
 import { ORGANIZATIONS } from "@/types";
 import dynamic from "next/dynamic";
 import React, { useEffect, useState } from "react";
-
-const Darkmode = dynamic(() => import("@/components/Darkmode"), {
-  ssr: false,
-});
+import Darkmode from "@/components/Darkmode";
 
 interface Props {
   organization: string;
@@ -31,6 +28,8 @@ const Header = ({
   const [isTop, setIsTop] = useState(true);
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+
     const scrollListener = () => {
       setIsTop(window.scrollY === 0);
     };
@@ -51,7 +50,10 @@ const Header = ({
     >
       <div className="flex items-center content-center w-full max-w-7xl mx-auto">
         <Select value={organization} onValueChange={handleOrganizationChange}>
-          <SelectTrigger className="flex sm:hidden w-full sm:w-48">
+          <SelectTrigger
+            name="organization_select"
+            className="flex sm:hidden w-full sm:w-48"
+          >
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
