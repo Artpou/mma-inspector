@@ -46,6 +46,7 @@ export default function RootLayout({
               <span className="mr-1">Built by</span>
               <a
                 href="https://arthur-poullin.netlify.app/"
+                aria-label="Website"
                 className="text-foreground font-medium"
               >
                 Arthur Poullin
@@ -54,12 +55,14 @@ export default function RootLayout({
             <div className="flex-center gap-2">
               <a
                 href="https://github.com/artpou"
+                aria-label="GitHub"
                 className="flex-center rounded-full w-10 h-10 bg-black hover:bg-gray-800 text-white"
               >
                 <Github />
               </a>
               <a
                 href="https://linkedin.com/in/artpou"
+                aria-label="LinkedIn"
                 className="flex-center rounded-full w-10 h-10 bg-black hover:bg-gray-800 text-white"
               >
                 <Linkedin />

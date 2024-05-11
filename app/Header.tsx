@@ -63,7 +63,7 @@ const Header = ({
                   width={24}
                   height={24}
                   src={`/organization/${organization}.png`}
-                  alt={organization}
+                  alt="select-organization"
                   className="mr-2 rounded-sm"
                 />
               ) : (
