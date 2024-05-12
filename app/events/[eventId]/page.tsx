@@ -1,13 +1,15 @@
 "use client";
 
 import { fetchEvent, fetchFights } from "@/app/query";
+import CalendarLink from "@/components/CalendarLink";
 import Fight from "@/components/Fight/Fight";
 import Loader from "@/components/Loader";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { flagEmoji } from "@/components/utils/string";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, BellRing } from "lucide-react";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useRef } from "react";
 import { useQuery } from "react-query";
@@ -27,6 +29,12 @@ export default function EventPage({ params }) {
   const [display, setDisplay] = React.useState<"advanced" | "simple">(
     "advanced"
   );
+
+  const switchDisplay = () => {
+    const newDisplay = display === "simple" ? "advanced" : "simple";
+    localStorage?.setItem("display", newDisplay);
+    setDisplay(newDisplay);
+  };
 
   const { data: event, isFetching: eventFetching } = useQuery({
     queryKey: ["event", eventId],
@@ -55,6 +63,13 @@ export default function EventPage({ params }) {
     return () => clearTimeout(timeout);
   }, [scrollIndex, fights]);
 
+  useEffect(() => {
+    if (typeof localStorage === "undefined") return;
+    setDisplay(
+      localStorage?.getItem("display") === "simple" ? "simple" : "advanced"
+    );
+  }, []);
+
   return (
     <>
       <div className="fixed top-0 flex items-center border space-x-2 z-20 bg-card p-2 w-full">
@@ -62,25 +77,32 @@ export default function EventPage({ params }) {
           <ArrowLeft className="mr-2" size={16} />
           <span>Back</span>
         </Button>
-        <div className="flex-center w-full space-x-4 justify-between">
-          <Tabs
-            value={display}
-            onValueChange={(value) =>
-              setDisplay(value as "advanced" | "simple")
-            }
-          >
-            <TabsList>
-              <TabsTrigger value="advanced">Advanced</TabsTrigger>
-              <TabsTrigger value="simple">Simple</TabsTrigger>
-            </TabsList>
-          </Tabs>
+        <Tabs value={display} onValueChange={switchDisplay}>
+          <TabsList>
+            <TabsTrigger value="advanced">Advanced</TabsTrigger>
+            <TabsTrigger value="simple">Simple</TabsTrigger>
+          </TabsList>
+        </Tabs>
+        <div className="flex-center w-full space-x-2 justify-between">
+          {new Date(event?.date) > new Date() ? (
+            <CalendarLink event={event} />
+          ) : (
+            <div />
+          )}
           <Darkmode />
         </div>
       </div>
       <div className="bg-card mt-[72px] border rounded-lg shadow-lg py-4 mx-4">
         {!fightsFetching || !eventFetching ? (
           <div className="flex flex-col">
-            <div className="flex-center flex-col my-4">
+            <div className="flex-center flex-col mt-2 mb-4">
+              <Image
+                width={56}
+                height={56}
+                src={`/organization/${event?.organization}.png`}
+                alt={event?.title}
+                className="mb-2"
+              />
               <h2 className="font-bold sm:text-2xl">{event?.title}</h2>
               <span className="text-muted-foreground">
                 {new Date(event?.date).toLocaleString()}

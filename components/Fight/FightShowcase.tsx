@@ -8,9 +8,9 @@ import Loader from "../Loader";
 import texture from "@/public/texture.png";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { BellRing, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import unknownProfile from "@/public/fighter-unkown-profil.png";
-import { Button } from "../ui/button";
+import CalendarLink from "../CalendarLink";
 
 type Props = {
   event: TEvent;
@@ -33,14 +33,6 @@ const FightShowcase = ({ event, fights, loadFights }: Props) => {
   useEffect(() => {
     setIndex(0);
   }, [event]);
-
-  function format(value: string, addedHours = 0) {
-    if (!value) return;
-    const date = new Date(value);
-    date.setHours(date.getHours() + addedHours + 2);
-
-    return date.toISOString().replace(/[-:]/g, "").slice(0, -5);
-  }
 
   return (
     <>
@@ -172,18 +164,7 @@ const FightShowcase = ({ event, fights, loadFights }: Props) => {
             date={event.date}
             className="text-white bg-black rounded-none"
           >
-            <Link
-              href={`https://calendar.google.com/calendar/r/eventedit?dates=${format(
-                event.date
-              )}/${format(event.date, 3)}&text=${event.title}&details=${
-                event.description
-              }`}
-              target="_blank"
-            >
-              <Button size="sm">
-                <BellRing size={16} />
-              </Button>
-            </Link>
+            <CalendarLink event={event} />
           </Countdown>
         </div>
       ) : (
