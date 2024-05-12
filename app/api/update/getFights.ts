@@ -116,8 +116,6 @@ export async function getFights(
       fight.status["$ref"].replace("http", "https")
     );
     const status = await responseStatus.json();
-    console.log("🚀 ~ datas ~ status:", status);
-    console.log(fight.status["$ref"]);
 
     data.status = {
       clock: status.clock,
