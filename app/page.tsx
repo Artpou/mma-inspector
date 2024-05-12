@@ -7,10 +7,6 @@ import dynamic from "next/dynamic";
 import Header from "./Header";
 import Events from "@/components/Events/Events";
 
-const ScrollButton = dynamic(() => import("@/components/ScrollButton"), {
-  ssr: false,
-});
-
 export default function Home() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -42,7 +38,6 @@ export default function Home() {
 
   return (
     <main className="flex flex-col">
-      <ScrollButton />
       <Header
         organization={organization}
         schedule={schedule}

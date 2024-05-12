@@ -8,8 +8,8 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { flagEmoji } from "@/components/utils/string";
 import { ArrowLeft } from "lucide-react";
 import dynamic from "next/dynamic";
-import Link from "next/link";
-import React from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import React, { useEffect, useRef } from "react";
 import { useQuery } from "react-query";
 
 const Darkmode = dynamic(() => import("@/components/Darkmode"), { ssr: false });
@@ -17,7 +17,12 @@ const Darkmode = dynamic(() => import("@/components/Darkmode"), { ssr: false });
 const STALE_TIME = 1000 * 60 * 2;
 
 export default function EventPage({ params }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   const { eventId } = params;
+  const scrollIndex = searchParams.get("index");
+  const scrollToRef = useRef(null);
 
   const [display, setDisplay] = React.useState<"advanced" | "simple">(
     "advanced"
@@ -37,15 +42,26 @@ export default function EventPage({ params }) {
     refetchOnWindowFocus: false,
   });
 
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (!!fights && !!scrollToRef.current && Number(scrollIndex) > 0) {
+        scrollToRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    }, 500);
+
+    return () => clearTimeout(timeout);
+  }, [scrollIndex, fights]);
+
   return (
     <>
       <div className="fixed top-0 flex items-center border space-x-2 z-20 bg-card p-2 w-full">
-        <Link href="/">
-          <Button size="sm">
-            <ArrowLeft className="mr-2" size={16} />
-            <span>Back</span>
-          </Button>
-        </Link>
+        <Button size="sm" onClick={() => router.back()}>
+          <ArrowLeft className="mr-2" size={16} />
+          <span>Back</span>
+        </Button>
         <div className="flex-center w-full space-x-4 justify-between">
           <Tabs
             value={display}
@@ -79,7 +95,13 @@ export default function EventPage({ params }) {
             </div>
             {fights &&
               fights?.map((fight, key) => (
-                <div key={key} className="">
+                <div key={key} className="relative">
+                  {key === +scrollIndex && (
+                    <div
+                      className="absolute w-2 h-2 top-[-60px]"
+                      ref={scrollToRef}
+                    />
+                  )}
                   <Fight fight={fight} display={display} />
                 </div>
               ))}

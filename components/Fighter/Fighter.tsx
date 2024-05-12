@@ -6,6 +6,9 @@ import { Crown } from "lucide-react";
 import { TFight, TFighter } from "@/types";
 import { Badge } from "../ui/badge";
 
+import unknownFighterProfil from "@/public/fighter-unkown-profil.png";
+import { useState } from "react";
+
 interface TitleProps {
   fighter: TFighter;
   winner?: boolean;
@@ -14,6 +17,9 @@ interface TitleProps {
 
 export const Fighter = ({ fighter, winner, className }: TitleProps) => {
   const recordSplit = !!fighter.record && fighter.record.split("-");
+  const [img, setImg] = useState(
+    fighter.images?.profil || unknownFighterProfil
+  );
 
   const openFighter = () =>
     window.open(
@@ -54,7 +60,8 @@ export const Fighter = ({ fighter, winner, className }: TitleProps) => {
               width={80}
               height={80}
               alt={fighter.name}
-              src={fighter.images?.profil}
+              src={img}
+              onError={() => setImg(unknownFighterProfil)}
               className={cn(
                 "rounded-full w-16 h-16 object-cover border mb-2",
                 winner === true

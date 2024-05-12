@@ -8,6 +8,11 @@ import { Suspense } from "react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import Placeholder from "./placeholder";
 import { Github, Linkedin } from "lucide-react";
+import dynamic from "next/dynamic";
+
+const ScrollButton = dynamic(() => import("@/components/ScrollButton"), {
+  ssr: false,
+});
 
 const fontSans = Inter({
   subsets: ["latin"],
@@ -38,6 +43,7 @@ export default function RootLayout({
       >
         <Suspense fallback={<Placeholder />}>
           <ReactQueryProvider>
+            <ScrollButton />
             {children}
             <SpeedInsights />
           </ReactQueryProvider>

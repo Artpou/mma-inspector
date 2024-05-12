@@ -24,6 +24,7 @@ export async function GET(request: NextRequest) {
       if (!find) {
         acc.create.push(event);
       } else if (find.updatedAt < event.updatedAt) {
+        event.needsUpdate = true;
         acc.needUpdate.push(event);
       }
 
@@ -37,11 +38,13 @@ export async function GET(request: NextRequest) {
     skipDuplicates: true,
   });
 
-  await prisma.event.updateMany({
-    where: {
-      id: { in: needUpdate.map((event) => event.id) },
-    },
-    data: { needsUpdate: true },
+  await prisma.$transaction(async (tx) => {
+    for (const update of needUpdate) {
+      await tx.event.update({
+        where: { id: update.id },
+        data: update,
+      });
+    }
   });
 
   const events = await prisma.event.findMany({
@@ -50,6 +53,23 @@ export async function GET(request: NextRequest) {
 
   for (const event of events) {
     const fights = await getFights(event);
+
+    console.log(
+      "💾 FIGHT",
+      event.id,
+      ":",
+      event.title,
+      "nbFights: ",
+      fights.length
+    );
+
+    // remove old fights to avoid conflict
+    await prisma.fightsOnFighters.deleteMany({
+      where: { fight: { eventId: event.id } },
+    });
+    await prisma.fight.deleteMany({
+      where: { eventId: event.id },
+    });
 
     for (const fight of fights) {
       const { fightersId, ...fightData } = fight;
@@ -66,10 +86,8 @@ export async function GET(request: NextRequest) {
         }
       });
 
-      await prisma.fight.upsert({
-        where: { id: fight.id },
-        update: fightData,
-        create: fightData,
+      await prisma.fight.create({
+        data: fightData,
       });
 
       await prisma.$transaction(async (tx) => {

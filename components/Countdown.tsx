@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
 
 interface Props {
-  date: Date;
+  date?: string;
+  className?: string;
+  children?: React.ReactNode;
 }
 
-const Countdown = ({ date }) => {
+const Countdown = ({ date, className, children }: Props) => {
   const [days, setDays] = useState("");
   const [hours, setHours] = useState("");
   const [minutes, setMinutes] = useState("");
@@ -46,7 +49,12 @@ const Countdown = ({ date }) => {
   }
 
   return (
-    <div className="flex items-center z-10 bg-[hsla(0,0%,0%,0.7)] rounded-md px-2 py-1 gap-4 justify-center">
+    <div
+      className={cn(
+        "flex items-center z-10 bg-[hsla(0,0%,0%,0.7)] rounded-md px-2 py-1 gap-4 justify-center",
+        className
+      )}
+    >
       {parseInt(date) > 0 && (
         <div className="flex-center flex-col">
           <span>{days}</span>
@@ -65,6 +73,7 @@ const Countdown = ({ date }) => {
         <span>{seconds}</span>
         <span>Seconds</span>
       </div>
+      {children}
     </div>
   );
 };

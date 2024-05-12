@@ -61,11 +61,11 @@ export const FightFightersStats = ({ fight, classname }: FightersStatProps) => {
         return (
           <div key={key} className="flex flex-col sm:space-y-1 w-full">
             <div key={key} className="flex justify-between">
-              <span className="font-medium mx-2">
+              <span className="font-medium sm:mx-2">
                 {getStat(fight.stats.fighterA, key)}
               </span>
               <span className="uppercase font-light">{key}</span>
-              <span className="font-medium mx-2">
+              <span className="font-medium sm:mx-2">
                 {getStat(fight.stats.fighterB, key)}
               </span>
             </div>

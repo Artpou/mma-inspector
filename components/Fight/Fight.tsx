@@ -113,7 +113,7 @@ const Fight = ({ fight, display = "advanced" }: Props) => {
                 </>
               )}
             </div>
-            {!fight.status.name.includes("Decision") && (
+            {!fight.status.name?.includes("Decision") && (
               <div className="flex font-light text-muted-foreground space-x-2">
                 <span>{fight.status.round} round</span>
                 <span> - </span>
@@ -148,7 +148,7 @@ const Fight = ({ fight, display = "advanced" }: Props) => {
               >
                 {fighterAOdds}
               </span>
-              <span>{!!fighterAOdds && !!fighterBOdds ? " / " : "VS"}</span>
+              <span>{!!fighterAOdds || !!fighterBOdds ? " / " : "VS"}</span>
               <span
                 className={fighterBOdds < 0 ? "text-green-700" : "text-red-700"}
               >

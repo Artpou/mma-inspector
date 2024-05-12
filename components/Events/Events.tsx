@@ -1,8 +1,8 @@
-import { TEvent, TOrganization, TSchedule } from "@/types";
+import { TEvent, TFight, TOrganization, TSchedule } from "@/types";
 import { useState } from "react";
 
 import dynamic from "next/dynamic";
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import FightShowcase from "../Fight/FightShowcase";
 import { Skeleton } from "../ui/skeleton";
 import { fetchFights } from "@/app/query";
@@ -20,6 +20,7 @@ type Props = {
 
 function Events({ organization, schedule }: Props) {
   const [page, setPage] = useState(0);
+  const [loaded, setLoaded] = useState(false);
 
   const fetchEvents = async (page: number) =>
     (
@@ -42,6 +43,14 @@ function Events({ organization, schedule }: Props) {
     refetchOnWindowFocus: false,
   });
 
+  const { mutate } = useMutation({
+    mutationKey: ["mainFight", organization, schedule],
+    mutationFn: async () => {
+      if (!!events?.[0]?.fights) return;
+      events[0].fights = await fetchFights(events?.[0]?.id);
+    },
+  });
+
   const eventsByMonth: { events: TEvent[]; month: string }[] = events?.reduce(
     (acc, event) => {
       const month = new Date(event.date).toLocaleString("en-US", {
@@ -60,7 +69,11 @@ function Events({ organization, schedule }: Props) {
 
   return (
     <>
-      <FightShowcase fight={events?.[0]?.mainFight} event={events?.[0]} />
+      <FightShowcase
+        fights={events?.[0]?.fights || [events?.[0]?.mainFight]}
+        event={events?.[0]}
+        loadFights={mutate}
+      />
       <div className="flex flex-col w-full px-4 sm:px-12 py-4">
         {isFetched ? (
           eventsByMonth?.map(({ events, month }) => (
