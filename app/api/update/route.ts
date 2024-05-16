@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
     where: { needsUpdate: true },
   });
 
-  for (const event of events) {
+  events.map(async (event) => {
     const fights = await getFights(event);
 
     console.log(
@@ -63,79 +63,64 @@ export async function GET(request: NextRequest) {
       fights.length
     );
 
-    // remove old fights to avoid conflict
-    await prisma.odd.deleteMany({
-      where: { fight: { eventId: event.id } },
-    });
-    await prisma.fightsOnFighters.deleteMany({
-      where: { fight: { eventId: event.id } },
-    });
-    await prisma.fight.deleteMany({
-      where: { eventId: event.id },
-    });
-
-    for (const fight of fights) {
+    fights.map(async (fight) => {
       const { fightersId, ...fightData } = fight;
 
-      await prisma.$transaction(async (tx) => {
-        for (const fighterId of fightersId) {
-          const fighter = await getFighter(fighterId);
+      for (const fighterId of fightersId) {
+        const fighter = await getFighter(fighterId);
 
-          await tx.fighter.upsert({
-            where: { id: fighter.id },
-            update: fighter,
-            create: fighter,
-          });
-        }
+        await prisma.fighter.upsert({
+          where: { id: fighter.id },
+          update: fighter,
+          create: fighter,
+        });
+      }
+
+      await prisma.fight.upsert({
+        where: { id: fight.id },
+        update: fightData,
+        create: fightData,
       });
 
-      await prisma.fight.create({
-        data: fightData,
-      });
+      for (const fighterId of fightersId) {
+        const relationExists = await prisma.fightsOnFighters.findMany({
+          select: { id: true },
+          where: {
+            fighterId: fighterId,
+            fightId: fight.id,
+          },
+        });
 
-      await prisma.$transaction(async (tx) => {
-        for (const fighterId of fightersId) {
-          const relationExists = await tx.fightsOnFighters.findMany({
-            select: { id: true },
-            where: {
+        if (relationExists.length === 0) {
+          await prisma.fightsOnFighters.create({
+            data: {
               fighterId: fighterId,
               fightId: fight.id,
             },
           });
-
-          if (relationExists.length === 0) {
-            await tx.fightsOnFighters.create({
-              data: {
-                fighterId: fighterId,
-                fightId: fight.id,
-              },
-            });
-          }
         }
-      });
+      }
 
       const odds = await getOdd(event, fight);
 
-      await prisma.$transaction(async (tx) => {
-        for (const odd of odds) {
-          const oddExists = await tx.odd.findFirst({
-            where: { fighterId: odd.fighterId },
-          });
+      for (const odd of odds) {
+        const oddExists = await prisma.odd.findFirst({
+          where: { fighterId: odd.fighterId, fightId: odd.fightId },
+        });
 
-          if (oddExists) {
-            await tx.odd.updateMany({
-              where: { fighterId: odd.fighterId },
-              data: odd,
-            });
-          } else {
-            await tx.odd.create({
-              data: odd,
-            });
-          }
+        if (oddExists) {
+          await prisma.odd.updateMany({
+            where: { fighterId: odd.fighterId, fightId: odd.fightId },
+            data: odd,
+          });
+        } else {
+          await prisma.odd.create({
+            data: odd,
+          });
         }
-      });
-    }
-  }
+      }
+    });
+  });
 
   await prisma.event.updateMany({
     where: {
