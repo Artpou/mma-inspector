@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import getEvents from "./getEvents";
 import prisma from "@/lib/prisma";
 import { getFights } from "./getFights";
-import { Fight } from "@prisma/client";
 import { getFighter } from "./getFighter";
 import { getOdd } from "./getOdd";
+import { sleep } from "@/app/utils/time";
 
 export async function GET(request: NextRequest) {
   const data = await getEvents();
@@ -51,17 +51,10 @@ export async function GET(request: NextRequest) {
     where: { needsUpdate: true },
   });
 
+  await sleep(500);
+
   events.map(async (event) => {
     const fights = await getFights(event);
-
-    console.log(
-      "💾 FIGHT",
-      event.id,
-      ":",
-      event.title,
-      "nbFights: ",
-      fights.length
-    );
 
     fights.map(async (fight) => {
       const { fightersId, ...fightData } = fight;
