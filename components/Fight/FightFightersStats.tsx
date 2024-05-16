@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { inchesToCm, inchesToFeet, poundToKg } from "../utils/metrics";
+import { inchesToCm, inchesToFeet, poundToKg } from "../../app/utils/metrics";
 
 import { TooltipWrapper } from "../ui/tooltip";
 import { CircleHelp } from "lucide-react";

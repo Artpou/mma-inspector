@@ -119,6 +119,8 @@ const FightShowcase = ({ event, fights, loadFights }: Props) => {
                       ? unknownProfile.src
                       : fight.fighterA.images.profil
                   }
+                  placeholder="blur"
+                  blurDataURL="/fighter-unkown-profil.png"
                   alt={event.title}
                   width={300}
                   height={300}
@@ -139,6 +141,8 @@ const FightShowcase = ({ event, fights, loadFights }: Props) => {
                       : fight.fighterB.images.profil
                   }
                   alt={event.title}
+                  placeholder="blur"
+                  blurDataURL="/fighter-unkown-profil.png"
                   width={300}
                   height={300}
                   className={cn("", {

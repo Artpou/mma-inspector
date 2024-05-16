@@ -1,9 +1,8 @@
 import Image from "next/image";
 import BeltPng from "@/public/belt.png";
 import { Separator } from "../ui/separator";
-import { Button } from "../ui/button";
 import { useEffect, useState } from "react";
-import { merge } from "@/components/utils/array";
+import { merge } from "@/app/utils/array";
 import FightFightersStats from "./FightFightersStats";
 import { FighterImage } from "../Fighter/FighterImage";
 import Fighter from "../Fighter/Fighter";
@@ -13,8 +12,7 @@ import { TabsList } from "@radix-ui/react-tabs";
 import FightStats from "./FightStats";
 import { ArrowLeft, ArrowRight, Crown } from "lucide-react";
 import { TFight, TFighter } from "@/types";
-import { secondsToTimeFormat } from "../utils/date";
-import { Switch } from "../ui/switch";
+import { secondsToTimeFormat } from "../../app/utils/date";
 
 interface Props {
   fight: TFight;

@@ -4,9 +4,10 @@ import { fetchEvent, fetchFights } from "@/app/query";
 import CalendarLink from "@/components/CalendarLink";
 import Fight from "@/components/Fight/Fight";
 import Loader from "@/components/Loader";
+import ScrollList from "@/components/ScrollList";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { flagEmoji } from "@/components/utils/string";
+import { flagEmoji } from "@/app/utils/string";
 import { ArrowLeft, BellRing } from "lucide-react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
@@ -21,9 +22,11 @@ const STALE_TIME = 1000 * 60 * 2;
 export default function EventPage({ params }) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [scrollIndex, setScrollIndex] = React.useState(
+    Number(searchParams.get("index") || "-1")
+  );
 
   const { eventId } = params;
-  const scrollIndex = searchParams.get("index");
   const scrollToRef = useRef(null);
 
   const [display, setDisplay] = React.useState<"advanced" | "simple">(
@@ -52,7 +55,8 @@ export default function EventPage({ params }) {
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      if (!!fights && !!scrollToRef.current && Number(scrollIndex) > 0) {
+      console.log("🚀 ~ timeout ~ scrollIndex:", scrollIndex);
+      if (!!fights && !!scrollToRef.current && scrollIndex >= 0) {
         scrollToRef.current.scrollIntoView({
           behavior: "smooth",
           block: "start",
@@ -115,18 +119,23 @@ export default function EventPage({ params }) {
                 </div>
               )}
             </div>
-            {fights &&
-              fights?.map((fight, key) => (
-                <div key={key} className="relative">
-                  {key === +scrollIndex && (
-                    <div
-                      className="absolute w-2 h-2 top-[-60px]"
-                      ref={scrollToRef}
-                    />
-                  )}
-                  <Fight fight={fight} display={display} />
-                </div>
-              ))}
+            <ScrollList
+              label={fights?.map((fight) => String(fight.matchNumber)) || []}
+              onClick={setScrollIndex}
+            >
+              {fights &&
+                fights?.map((fight, key) => (
+                  <div key={key} className="relative">
+                    {key === +scrollIndex && (
+                      <div
+                        className="absolute w-2 h-2 top-[-60px]"
+                        ref={scrollToRef}
+                      />
+                    )}
+                    <Fight fight={fight} display={display} />
+                  </div>
+                ))}
+            </ScrollList>
           </div>
         ) : (
           <Loader />

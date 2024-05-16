@@ -1,5 +1,6 @@
 import { Event } from "@prisma/client";
 import { SITE_URL } from "./constants";
+import { isOlderThanNDays } from "@/app/utils/date";
 
 async function getEvents({
   organization = "all",
@@ -19,7 +20,10 @@ async function getEvents({
         link,
       };
     })
-    .filter((event) => event.organization !== "other");
+    .filter(
+      (event) =>
+        event.organization !== "other" && !isOlderThanNDays(event.date, 30)
+    );
 
   const events = await calendar.map(async (event) => {
     const detailsResponse = await fetch(event.link);

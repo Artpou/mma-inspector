@@ -7,7 +7,7 @@ import dynamic from "next/dynamic";
 import { ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { flagEmoji } from "../utils/string";
+import { flagEmoji } from "../../app/utils/string";
 
 type Props = {
   event: TEvent;

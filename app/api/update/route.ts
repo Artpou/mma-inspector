@@ -64,6 +64,9 @@ export async function GET(request: NextRequest) {
     );
 
     // remove old fights to avoid conflict
+    await prisma.odd.deleteMany({
+      where: { fight: { eventId: event.id } },
+    });
     await prisma.fightsOnFighters.deleteMany({
       where: { fight: { eventId: event.id } },
     });
