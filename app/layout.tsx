@@ -41,6 +41,7 @@ export default function RootLayout({
           fontSans.variable
         )}
       >
+        <link rel="icon" href="/logo.png" sizes="any" />
         <Suspense fallback={<Placeholder />}>
           <ReactQueryProvider>
             <ScrollButton />

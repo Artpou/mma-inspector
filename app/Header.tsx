@@ -52,6 +52,13 @@ const Header = ({
       )}
     >
       <div className="flex items-center content-center w-full max-w-7xl mx-auto">
+        <Image
+          src="/logo.png"
+          alt="logo"
+          width={38}
+          height={38}
+          className="hidden sm:block rounded-sm mr-2"
+        />
         <Select value={organization} onValueChange={handleOrganizationChange}>
           <SelectTrigger
             name="organization_select"
