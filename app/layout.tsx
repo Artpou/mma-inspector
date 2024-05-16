@@ -60,7 +60,7 @@ export default function RootLayout({
             </div>
             <div className="flex-center gap-2">
               <a
-                href="https://github.com/artpou"
+                href="https://github.com/artpou/mma-inspector"
                 aria-label="GitHub"
                 className="flex-center rounded-full w-10 h-10 bg-black hover:bg-gray-800 text-white"
               >
