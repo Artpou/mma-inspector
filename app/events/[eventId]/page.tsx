@@ -2,8 +2,6 @@
 
 import { fetchEvent, fetchFights } from "@/app/query";
 import CalendarLink from "@/components/CalendarLink";
-import Fight from "@/components/Fight/Fight";
-import Loader from "@/components/Loader";
 import ScrollList from "@/components/ScrollList";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -14,10 +12,23 @@ import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useRef } from "react";
 import { useQuery } from "react-query";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Darkmode = dynamic(() => import("@/components/Darkmode"), { ssr: false });
 
 const STALE_TIME = 1000 * 60 * 2;
+
+const EventLoader = () => (
+  <div className="flex flex-col">
+    {Array.from({ length: 10 }).map((_, key) => (
+      <Skeleton key={key} className="flex m-6 h-[350px] sm:h-[500px]" />
+    ))}
+  </div>
+);
+
+const Fight = dynamic(() => import("@/components/Fight/Fight"), {
+  loading: () => <EventLoader />,
+});
 
 export default function EventPage({ params }) {
   const router = useRouter();
@@ -123,22 +134,27 @@ export default function EventPage({ params }) {
               label={fights?.map((fight) => String(fight.matchNumber)) || []}
               onClick={setScrollIndex}
             >
-              {fights &&
+              {!!fights ? (
                 fights?.map((fight, key) => (
                   <div key={key} className="relative">
                     {key === +scrollIndex && (
-                      <div
-                        className="absolute w-2 h-2 top-[-60px]"
-                        ref={scrollToRef}
-                      />
+                      <div className="absolute top-[-60px]" ref={scrollToRef} />
                     )}
                     <Fight fight={fight} display={display} />
                   </div>
-                ))}
+                ))
+              ) : (
+                <EventLoader />
+              )}
             </ScrollList>
           </div>
         ) : (
-          <Loader />
+          <div className="flex flex-col items-center">
+            <Skeleton className="mt-2 mb-4 w-80 h-36" />
+            <div className="w-full">
+              <EventLoader />
+            </div>
+          </div>
         )}
       </div>
     </>

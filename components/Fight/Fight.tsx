@@ -42,8 +42,8 @@ const Fight = ({ fight, display = "advanced" }: Props) => {
   return (
     <div
       className={cn(
-        "flex justify-evenly sm:py-6 px-2",
-        display === "advanced" && "sm:min-h-[300px]"
+        "flex justify-evenly sm:py-6 px-2 overflow-x-hidden",
+        display === "advanced" && "min-h-[350px] sm:min-h-[500px]"
       )}
     >
       <FighterImage

@@ -34,7 +34,11 @@ export const FighterImage = ({
     )}
   >
     <Image
-      className={cn("h-fit w-150 max-h-[450px] object-contain", classname)}
+      className={cn(
+        "h-fit w-150 max-h-[450px] object-contain",
+        position === "left" ? "animate-left-appear" : "animate-right-appear",
+        classname
+      )}
       src={
         display === "advanced"
           ? position === "left"
