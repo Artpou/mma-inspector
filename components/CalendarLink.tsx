@@ -25,8 +25,9 @@ function CalendarLink({ event }: Props) {
         event.description
       }`}
       target="_blank"
+      aria-label="Add to Google Calendar"
     >
-      <Button size="sm">
+      <Button aria-label="calendar_button" size="sm">
         <BellRing size={16} />
       </Button>
     </Link>

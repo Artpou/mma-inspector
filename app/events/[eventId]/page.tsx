@@ -8,7 +8,7 @@ import ScrollList from "@/components/ScrollList";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { flagEmoji } from "@/app/utils/string";
-import { ArrowLeft, BellRing } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -77,7 +77,7 @@ export default function EventPage({ params }) {
   return (
     <>
       <div className="fixed top-0 flex items-center border space-x-2 z-20 bg-card p-2 w-full">
-        <Button size="sm" onClick={() => router.back()}>
+        <Button size="sm" onClick={() => router.push("/")}>
           <ArrowLeft className="mr-2" size={16} />
           <span>Back</span>
         </Button>

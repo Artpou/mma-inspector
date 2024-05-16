@@ -20,7 +20,6 @@ type Props = {
 
 function Events({ organization, schedule }: Props) {
   const [page, setPage] = useState(0);
-  const [loaded, setLoaded] = useState(false);
 
   const fetchEvents = async (page: number) =>
     (

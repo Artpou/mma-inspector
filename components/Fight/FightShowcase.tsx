@@ -96,6 +96,7 @@ const FightShowcase = ({ event, fights, loadFights }: Props) => {
               />
               <Link
                 href={`/events/${event?.id}?index=${index}`}
+                aria-label="Fight details"
                 scroll={false}
                 className=" w-full h-full"
               />
