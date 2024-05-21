@@ -10,17 +10,16 @@ datasource db {
 }
 
 model Odd {
-  id        String   @id @default(cuid())
   fightId   String
   fighterId String
-  createdAt DateTime @default(now())
-  updatedAt DateTime
   provider  String
   priority  Int
   favorite  Boolean
   value     Float
-  fighter   Fighter  @relation(fields: [fighterId], references: [id])
-  fight     Fight    @relation(fields: [fightId], references: [id])
+  fighter   Fighter @relation(fields: [fighterId], references: [id], onDelete: Cascade)
+  fight     Fight   @relation(fields: [fightId], references: [id], onDelete: Cascade)
+
+  @@id([fightId, fighterId, provider])
 }
 
 model Fighter {
@@ -66,11 +65,12 @@ model Fight {
 }
 
 model FightsOnFighters {
-  id        String  @id @default(cuid())
   fightId   String
   fighterId String
-  fight     Fight   @relation(fields: [fightId], references: [id])
-  fighter   Fighter @relation(fields: [fighterId], references: [id])
+  fight     Fight   @relation(fields: [fightId], references: [id], onDelete: Cascade)
+  fighter   Fighter @relation(fields: [fighterId], references: [id], onDelete: Cascade)
+
+  @@id([fightId, fighterId])
 }
 
 model Event {
