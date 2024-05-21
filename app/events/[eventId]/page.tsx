@@ -37,7 +37,7 @@ export default function EventPage({ params }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [scrollIndex, setScrollIndex] = React.useState(
-    Number(searchParams.get("index") || "-1")
+    Number(searchParams.get("index") || -1)
   );
 
   const { eventId } = params;
@@ -79,6 +79,10 @@ export default function EventPage({ params }) {
 
     return () => clearTimeout(timeout);
   }, [scrollIndex, fights]);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   useEffect(() => {
     if (typeof localStorage === "undefined") return;

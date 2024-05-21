@@ -35,7 +35,6 @@ export const FighterImage = ({
     ? (winner === "A" && position === "left") ||
       (winner === "B" && position === "right")
     : undefined;
-  console.log("🚀 ~ isWinner:", isWinner);
 
   return (
     <div

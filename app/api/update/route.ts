@@ -67,7 +67,6 @@ export async function GET(_request: NextRequest) {
 
   events.map(async (event) => {
     const fights = await getFights(event);
-    console.log("🚀 ~ events.map ~ fights:", fights);
     await sleep(100);
 
     await prisma.fight.deleteMany({

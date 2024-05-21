@@ -19,6 +19,9 @@ const ScrollList = ({ children, label, onClick }: Props) => {
   useEffect(() => {
     const handleScroll = () => {
       const list = listRef.current;
+
+      if (!list) return;
+
       const listTop = list.getBoundingClientRect().top;
       setShow(true);
 
