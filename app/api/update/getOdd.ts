@@ -1,4 +1,5 @@
 import { Event, Fight, Odd } from "@prisma/client";
+
 import { CORE_URL } from "./constants";
 
 type ExtendedOdd = Omit<Odd, "id">;

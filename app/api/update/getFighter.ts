@@ -1,5 +1,6 @@
-import { CORE_URL } from "./constants";
 import { Fighter } from "@prisma/client";
+
+import { CORE_URL } from "./constants";
 
 export async function getFighter(id: string): Promise<Fighter> {
   const fighterData = await fetch(`${CORE_URL}/athletes/${id}`);

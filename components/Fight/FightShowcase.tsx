@@ -1,16 +1,20 @@
 import { useState, useEffect } from "react";
+
 import Image from "next/image";
-import { Badge } from "../ui/badge";
-import { TEvent, TFight } from "@/types";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+
+import unknownProfile from "@/public/fighter-unkown-profil.png";
+import texture from "@/public/texture.png";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+
 import { cn } from "@/lib/utils";
+import { TEvent, TFight } from "@/types";
+
+import CalendarLink from "../CalendarLink";
 import Countdown from "../Countdown";
 import Loader from "../Loader";
-import texture from "@/public/texture.png";
-import { useSearchParams } from "next/navigation";
-import Link from "next/link";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import unknownProfile from "@/public/fighter-unkown-profil.png";
-import CalendarLink from "../CalendarLink";
+import { Badge } from "../ui/badge";
 
 type Props = {
   event: TEvent;

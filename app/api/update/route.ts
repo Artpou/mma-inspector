@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import getEvents from "./getEvents";
-import prisma from "@/lib/prisma";
-import { getFights } from "./getFights";
-import { getFighter } from "./getFighter";
-import { getOdd } from "./getOdd";
+
 import { sleep } from "@/app/utils/time";
+import prisma from "@/lib/prisma";
+
+import getEvents from "./getEvents";
+import { getFighter } from "./getFighter";
+import { getFights } from "./getFights";
+import { getOdd } from "./getOdd";
 
 export async function GET(request: NextRequest) {
   const data = await getEvents();

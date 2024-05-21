@@ -1,10 +1,11 @@
-import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 
+import { cn } from "@/lib/utils";
+
 interface Props {
-  date?: string;
-  className?: string;
   children?: React.ReactNode;
+  className?: string;
+  date?: string;
 }
 
 const Countdown = ({ date, className, children }: Props) => {

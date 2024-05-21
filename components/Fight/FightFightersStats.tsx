@@ -1,16 +1,17 @@
-import { cn } from "@/lib/utils";
-import { inchesToCm, inchesToFeet, poundToKg } from "../../app/utils/metrics";
-
-import { TooltipWrapper } from "../ui/tooltip";
 import { CircleHelp } from "lucide-react";
+
+import { cn } from "@/lib/utils";
 import { TFighter } from "@/types";
 
+import { inchesToCm, inchesToFeet, poundToKg } from "../../app/utils/metrics";
+import { TooltipWrapper } from "../ui/tooltip";
+
 interface FightersStatProps {
+  classname?: string;
   fighterA: TFighter;
   fighterB: TFighter;
-  stat: string;
   isAdvanced?: boolean;
-  classname?: string;
+  stat: string;
 }
 
 export const FightFightersStats = ({

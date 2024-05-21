@@ -1,8 +1,12 @@
-import { TEvent } from "@/types";
-import Link from "next/link";
 import React from "react";
-import { Button } from "./ui/button";
+
+import Link from "next/link";
+
 import { BellRing } from "lucide-react";
+
+import { TEvent } from "@/types";
+
+import { Button } from "./ui/button";
 
 type Props = {
   event: TEvent;

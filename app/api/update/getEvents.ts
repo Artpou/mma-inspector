@@ -1,6 +1,8 @@
 import { Event } from "@prisma/client";
-import { SITE_URL } from "./constants";
+
 import { isOlderThanNDays } from "@/app/utils/date";
+
+import { SITE_URL } from "./constants";
 
 async function getEvents({
   organization = "all",

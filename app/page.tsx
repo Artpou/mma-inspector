@@ -1,11 +1,12 @@
 "use client";
 
+import dynamic from "next/dynamic";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+
+import Events from "@/components/Events/Events";
 import { TOrganization, TSchedule, isOrganization, isSchedule } from "@/types";
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import dynamic from "next/dynamic";
 import Header from "./Header";
-import Events from "@/components/Events/Events";
 
 export default function Home() {
   const searchParams = useSearchParams();

@@ -1,12 +1,14 @@
-import { Badge } from "@/components/ui/badge";
-import Image from "next/image";
-
-import { TEvent } from "@/types";
-import { getCountryCode, getEmojiFlag } from "countries-list";
 import dynamic from "next/dynamic";
-import { ChevronRight } from "lucide-react";
-import { cn } from "@/lib/utils";
+import Image from "next/image";
 import Link from "next/link";
+
+import { getCountryCode, getEmojiFlag } from "countries-list";
+import { ChevronRight } from "lucide-react";
+
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
+import { TEvent } from "@/types";
+
 import { flagEmoji } from "../../app/utils/string";
 
 type Props = {

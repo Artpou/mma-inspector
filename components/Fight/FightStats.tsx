@@ -2,8 +2,8 @@ import { cn } from "@/lib/utils";
 import { TFight } from "@/types";
 
 interface FightersStatProps {
-  fight: TFight;
   classname?: string;
+  fight: TFight;
 }
 
 export const FightFightersStats = ({ fight, classname }: FightersStatProps) => {

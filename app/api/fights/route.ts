@@ -1,6 +1,7 @@
+import { NextRequest, NextResponse } from "next/server";
+
 import prisma from "@/lib/prisma";
 import { TFight } from "@/types";
-import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   request: NextRequest

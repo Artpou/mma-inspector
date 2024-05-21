@@ -1,3 +1,10 @@
+import React, { useEffect, useState } from "react";
+
+import dynamic from "next/dynamic";
+import Image from "next/image";
+
+import { Ellipsis } from "lucide-react";
+
 import {
   Select,
   SelectContent,
@@ -8,18 +15,14 @@ import {
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { ORGANIZATIONS } from "@/types";
-import dynamic from "next/dynamic";
-import React, { useEffect, useState } from "react";
-import Image from "next/image";
-import { Ellipsis } from "lucide-react";
 
 const Darkmode = dynamic(() => import("@/components/Darkmode"), { ssr: false });
 
 interface Props {
-  organization: string;
-  schedule: string;
   handleOrganizationChange: (value: string) => void;
   handleScheduleChange: (value: string) => void;
+  organization: string;
+  schedule: string;
 }
 
 const Header = ({

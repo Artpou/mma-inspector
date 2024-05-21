@@ -1,14 +1,18 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
-import { cn } from "@/lib/utils";
-import Image from "next/image";
-import ReactQueryProvider from "./provider/ReactQueryProvider";
 import { Suspense } from "react";
-import { SpeedInsights } from "@vercel/speed-insights/next";
-import Placeholder from "./placeholder";
-import { Github, Linkedin } from "lucide-react";
+
+import type { Metadata } from "next";
 import dynamic from "next/dynamic";
+import Image from "next/image";
+
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Github, Linkedin } from "lucide-react";
+import { Inter } from "next/font/google";
+
+import { cn } from "@/lib/utils";
+
+import "./globals.css";
+import Placeholder from "./placeholder";
+import ReactQueryProvider from "./provider/ReactQueryProvider";
 
 const ScrollButton = dynamic(() => import("@/components/ScrollButton"), {
   ssr: false,

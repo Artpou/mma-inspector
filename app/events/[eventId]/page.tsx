@@ -1,18 +1,21 @@
 "use client";
 
-import { fetchEvent, fetchFights } from "@/app/query";
-import CalendarLink from "@/components/CalendarLink";
-import ScrollList from "@/components/ScrollList";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { flagEmoji } from "@/app/utils/string";
-import { ArrowLeft } from "lucide-react";
+import React, { useEffect, useRef } from "react";
+import { useQuery } from "react-query";
+
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useEffect, useRef } from "react";
-import { useQuery } from "react-query";
+
+import { ArrowLeft } from "lucide-react";
+
+import { fetchEvent, fetchFights } from "@/app/query";
+import { flagEmoji } from "@/app/utils/string";
+import CalendarLink from "@/components/CalendarLink";
+import ScrollList from "@/components/ScrollList";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Darkmode = dynamic(() => import("@/components/Darkmode"), { ssr: false });
 

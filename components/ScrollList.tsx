@@ -1,6 +1,8 @@
-import { cn } from "@/lib/utils";
-import { Trophy } from "lucide-react";
 import React, { useState, useEffect, useRef } from "react";
+
+import { Trophy } from "lucide-react";
+
+import { cn } from "@/lib/utils";
 
 interface Props {
   children: React.ReactNode;

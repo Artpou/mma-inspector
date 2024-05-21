@@ -1,20 +1,21 @@
-import { cn } from "@/lib/utils";
-
 import Image from "next/image";
 
 import unknownFighterLeft from "@/public/fighter-unknown-left.png";
 import unknownFighterRight from "@/public/fighter-unknown-right.png";
-import { Badge } from "../ui/badge";
+
+import { cn } from "@/lib/utils";
 import { TFight, TFighter } from "@/types";
 
+import { Badge } from "../ui/badge";
+
 interface FighterImageProps {
-  fighter: TFighter;
-  display?: "advanced" | "simple";
   classname?: string;
-  position?: "left" | "right";
-  width?: number;
+  display?: "advanced" | "simple";
+  fighter: TFighter;
   height?: number;
+  position?: "left" | "right";
   stats?: any;
+  width?: number;
 }
 
 export const FighterImage = ({

@@ -2,8 +2,8 @@ import { cn } from "@/lib/utils";
 import { TFighter } from "@/types";
 
 interface FighterOddsProps {
-  fighter: TFighter;
   classname?: string;
+  fighter: TFighter;
 }
 
 const FighterOdds = ({ fighter, classname }: FighterOddsProps) => {

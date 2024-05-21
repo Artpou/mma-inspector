@@ -1,4 +1,5 @@
 import { Event, Fight } from "@prisma/client";
+
 import { CORE_URL } from "./constants";
 
 type ExtendedFight = Fight & {

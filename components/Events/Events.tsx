@@ -1,11 +1,13 @@
-import { TEvent, TFight, TOrganization, TSchedule } from "@/types";
 import { useState } from "react";
+import { useMutation, useQuery } from "react-query";
 
 import dynamic from "next/dynamic";
-import { useMutation, useQuery } from "react-query";
+
+import { fetchFights } from "@/app/query";
+import { TEvent, TFight, TOrganization, TSchedule } from "@/types";
+
 import FightShowcase from "../Fight/FightShowcase";
 import { Skeleton } from "../ui/skeleton";
-import { fetchFights } from "@/app/query";
 
 const EventItem = dynamic(() => import("./EventItem"), {
   loading: () => <Skeleton className="w-full max-w-7xl h-24 mb-4" />,

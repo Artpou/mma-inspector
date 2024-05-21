@@ -1,22 +1,26 @@
-import Image from "next/image";
-import BeltPng from "@/public/belt.png";
-import { Separator } from "../ui/separator";
 import { useEffect, useState } from "react";
-import { merge } from "@/app/utils/array";
-import FightFightersStats from "./FightFightersStats";
-import { FighterImage } from "../Fighter/FighterImage";
-import Fighter from "../Fighter/Fighter";
-import { cn } from "@/lib/utils";
-import { Tabs, TabsTrigger } from "../ui/tabs";
+
+import Image from "next/image";
+
+import BeltPng from "@/public/belt.png";
 import { TabsList } from "@radix-ui/react-tabs";
-import FightStats from "./FightStats";
 import { ArrowLeft, ArrowRight, Crown } from "lucide-react";
+
+import { merge } from "@/app/utils/array";
+import { cn } from "@/lib/utils";
 import { TFight, TFighter } from "@/types";
+
 import { secondsToTimeFormat } from "../../app/utils/date";
+import Fighter from "../Fighter/Fighter";
+import { FighterImage } from "../Fighter/FighterImage";
+import { Separator } from "../ui/separator";
+import { Tabs, TabsTrigger } from "../ui/tabs";
+import FightFightersStats from "./FightFightersStats";
+import FightStats from "./FightStats";
 
 interface Props {
-  fight: TFight;
   display?: "advanced" | "simple";
+  fight: TFight;
 }
 
 const stats: (keyof TFighter)[] = ["height", "weight", "age", "reach"];

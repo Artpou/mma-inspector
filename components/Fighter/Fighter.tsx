@@ -1,18 +1,20 @@
-import { cn } from "@/lib/utils";
-
-import Image from "next/image";
-import FighterOdds from "./FighterOdds";
-import { Crown } from "lucide-react";
-import { TFight, TFighter } from "@/types";
-import { Badge } from "../ui/badge";
-
-import unknownFighterProfil from "@/public/fighter-unkown-profil.png";
 import { useState } from "react";
 
+import Image from "next/image";
+
+import unknownFighterProfil from "@/public/fighter-unkown-profil.png";
+import { Crown } from "lucide-react";
+
+import { cn } from "@/lib/utils";
+import { TFight, TFighter } from "@/types";
+
+import { Badge } from "../ui/badge";
+import FighterOdds from "./FighterOdds";
+
 interface TitleProps {
+  className?: string;
   fighter: TFighter;
   winner?: boolean;
-  className?: string;
 }
 
 export const Fighter = ({ fighter, winner, className }: TitleProps) => {

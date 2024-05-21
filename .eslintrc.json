@@ -1,3 +1,32 @@
 {
-  "extends": "next/core-web-vitals"
+  "extends": "next/core-web-vitals",
+  "plugins": ["perfectionist"],
+  "rules": {
+    "perfectionist/sort-imports": [
+      "warn",
+      {
+        "groups": ["react", "next", "external", "internal", "unknown"],
+        "custom-groups": {
+          "value": {
+            "react": ["react", "react-*"],
+            "next": ["next", "next/*"]
+          },
+          "type": {
+            "react": "react",
+            "next": "next"
+          }
+        },
+        "newlines-between": "always",
+        "internal-pattern": [
+          "@/prisma/**",
+          "@/api/**",
+          "@/app/**",
+          "@/types**",
+          "@/components/**",
+          "@/lib/**"
+        ]
+      }
+    ],
+    "perfectionist/sort-exports": "warn"
+  }
 }
