@@ -28,7 +28,7 @@ async function getEvents({ organization = "all" } = {}): Promise<
     })
     .filter(
       (event) =>
-        event.organization !== "other" && !isOlderThanNDays(event.date, 30)
+        event.organization !== "other" && !isOlderThanNDays(event.date, 7)
     );
 
   await sleep(100);
