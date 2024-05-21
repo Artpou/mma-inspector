@@ -51,7 +51,7 @@ export default function RootLayout({
             <ScrollButton />
             {children}
             <SpeedInsights />
-            <Analytics />
+            {process.env?.ENV !== "development" && <Analytics />}
           </ReactQueryProvider>
           <footer className="flex flex-col gap-3 mb-2 text-center text-sm text-muted-foreground py-4">
             <div>
