@@ -1,7 +1,8 @@
 {
   "extends": "next/core-web-vitals",
-  "plugins": ["perfectionist"],
+  "plugins": ["perfectionist", "unused-imports"],
   "rules": {
+    // perfectionist
     "perfectionist/sort-imports": [
       "warn",
       {
@@ -27,6 +28,27 @@
         ]
       }
     ],
-    "perfectionist/sort-exports": "warn"
+    "perfectionist/sort-exports": "warn",
+    "perfectionist/sort-interfaces": [
+      "warn",
+      {
+        "groups": ["id", "unknown", "className"],
+        "custom-groups": {
+          "id": "id",
+          "className": "className"
+        }
+      }
+    ],
+    "perfectionist/sort-objects": [
+      "warn",
+      {
+        "groups": ["id", "relation", "unknown", "className"],
+        "custom-groups": {
+          "id": "id",
+          "relation": "**Id",
+          "className": "className"
+        }
+      }
+    ]
   }
 }

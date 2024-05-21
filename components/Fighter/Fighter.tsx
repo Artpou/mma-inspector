@@ -12,9 +12,9 @@ import { Badge } from "../ui/badge";
 import FighterOdds from "./FighterOdds";
 
 interface TitleProps {
-  className?: string;
   fighter: TFighter;
   winner?: boolean;
+  className?: string;
 }
 
 export const Fighter = ({ fighter, winner, className }: TitleProps) => {

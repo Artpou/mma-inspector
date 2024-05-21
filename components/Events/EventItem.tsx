@@ -19,8 +19,8 @@ type Props = {
 function EventItem({ event, className }: Props) {
   const formattedDate = (value: string) => {
     return new Date(value).toLocaleDateString("en-US", {
-      month: "long",
       day: "numeric",
+      month: "long",
     });
   };
 

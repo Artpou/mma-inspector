@@ -5,9 +5,9 @@ import { isOlderThanNDays } from "@/app/utils/date";
 import { SITE_URL } from "./constants";
 
 async function getEvents({
+  index = 0,
   organization = "all",
   schedule = "upcoming",
-  index = 0,
 } = {}): Promise<Event[]> {
   const response = await fetch(`${SITE_URL}/${organization}/scoreboard`);
   const scoreboard = await response.json();
@@ -16,10 +16,10 @@ async function getEvents({
     .map((event) => {
       const link = event.event["$ref"].replace(".pvt", ".com");
       return {
-        organization: link.split("/")[7],
         date: new Date(event.startDate),
         isFinished: new Date(event.startDate) < new Date(),
         link,
+        organization: link.split("/")[7],
       };
     })
     .filter(
@@ -51,15 +51,15 @@ async function getEvents({
       id: details.id,
       updatedAt: new Date(mainFight.lastUpdated),
       ...event,
-      title: details.shortName,
+      city: mainFight.venue?.address.city,
+      country: extractCountry(mainFight.venue?.address),
       description:
         (details.name.includes("vs") &&
           details.name.replace(details.shortName, "").replace(": ", "")) ||
         "",
-      titleCategory: mainFight.type?.text,
-      city: mainFight.venue?.address.city,
-      country: extractCountry(mainFight.venue?.address),
       fightsNumber: details.competitions.length,
+      title: details.shortName,
+      titleCategory: mainFight.type?.text,
     };
   });
 

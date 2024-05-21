@@ -6,7 +6,7 @@ interface FightersStatProps {
   fight: TFight;
 }
 
-export const FightFightersStats = ({ fight, classname }: FightersStatProps) => {
+export const FightFightersStats = ({ classname, fight }: FightersStatProps) => {
   const Bar = ({ value1, value2 }) => {
     const total = value1 + value2;
     const percent1 = (value1 / total) * 100;

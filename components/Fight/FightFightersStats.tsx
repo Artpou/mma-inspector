@@ -15,11 +15,11 @@ interface FightersStatProps {
 }
 
 export const FightFightersStats = ({
+  classname,
   fighterA,
   fighterB,
-  stat,
-  classname,
   isAdvanced = false,
+  stat,
 }: FightersStatProps) => {
   const label = (value) => {
     if (value !== 0 && !value) return "-";

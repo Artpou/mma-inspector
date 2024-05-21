@@ -9,15 +9,15 @@ export async function GET(request: NextRequest) {
   const page = request.nextUrl.searchParams.get("page") || 0;
 
   const events = await prisma.event.findMany({
-    where:
-      organization === "all"
-        ? { isFinished: schedule === "past" }
-        : { organization, isFinished: schedule === "past" },
     orderBy: {
       date: schedule === "upcoming" ? "asc" : "desc",
     },
     skip: Number(page) * 20 || 0,
     take: 20,
+    where:
+      organization === "all"
+        ? { isFinished: schedule === "past" }
+        : { isFinished: schedule === "past", organization },
   });
 
   return NextResponse.json(events);

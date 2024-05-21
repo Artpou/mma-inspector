@@ -2,11 +2,11 @@ import { cn } from "@/lib/utils";
 import { TFighter } from "@/types";
 
 interface FighterOddsProps {
-  classname?: string;
   fighter: TFighter;
+  className?: string;
 }
 
-const FighterOdds = ({ fighter, classname }: FighterOddsProps) => {
+const FighterOdds = ({ fighter, className }: FighterOddsProps) => {
   const odds = fighter.odds;
 
   if (!odds || !odds.length) return null;
@@ -16,7 +16,7 @@ const FighterOdds = ({ fighter, classname }: FighterOddsProps) => {
   };
 
   return (
-    <div className={cn("flex flex-col space-y-2 items-center", classname)}>
+    <div className={cn("flex flex-col space-y-2 items-center", className)}>
       <div
         className="w-20 h-2 rounded"
         style={{

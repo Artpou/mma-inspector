@@ -4,11 +4,11 @@ import { cn } from "@/lib/utils";
 
 interface Props {
   children?: React.ReactNode;
-  className?: string;
   date?: string;
+  className?: string;
 }
 
-const Countdown = ({ date, className, children }: Props) => {
+const Countdown = ({ children, date, className }: Props) => {
   const [days, setDays] = useState("");
   const [hours, setHours] = useState("");
   const [minutes, setMinutes] = useState("");

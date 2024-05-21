@@ -19,13 +19,13 @@ interface FighterImageProps {
 }
 
 export const FighterImage = ({
-  fighter,
-  display = "advanced",
   classname,
-  position = "left",
-  width = 150,
+  display = "advanced",
+  fighter,
   height = 300,
+  position = "left",
   stats,
+  width = 150,
 }: FighterImageProps) => (
   <div
     className={cn(

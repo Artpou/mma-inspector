@@ -43,8 +43,8 @@ export async function GET(request: NextRequest) {
   await prisma.$transaction(async (tx) => {
     for (const update of needUpdate) {
       await tx.event.update({
-        where: { id: update.id },
         data: update,
+        where: { id: update.id },
       });
     }
   });
@@ -65,16 +65,16 @@ export async function GET(request: NextRequest) {
         const fighter = await getFighter(fighterId);
 
         await prisma.fighter.upsert({
-          where: { id: fighter.id },
-          update: fighter,
           create: fighter,
+          update: fighter,
+          where: { id: fighter.id },
         });
       }
 
       await prisma.fight.upsert({
-        where: { id: fight.id },
-        update: fightData,
         create: fightData,
+        update: fightData,
+        where: { id: fight.id },
       });
 
       for (const fighterId of fightersId) {
@@ -105,8 +105,8 @@ export async function GET(request: NextRequest) {
 
         if (oddExists) {
           await prisma.odd.updateMany({
-            where: { fighterId: odd.fighterId, fightId: odd.fightId },
             data: odd,
+            where: { fighterId: odd.fighterId, fightId: odd.fightId },
           });
         } else {
           await prisma.odd.create({
@@ -118,10 +118,10 @@ export async function GET(request: NextRequest) {
   });
 
   await prisma.event.updateMany({
+    data: { needsUpdate: false },
     where: {
       id: { in: events.map((event) => event.id) },
     },
-    data: { needsUpdate: false },
   });
 
   return NextResponse.json({

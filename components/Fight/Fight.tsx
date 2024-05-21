@@ -25,7 +25,7 @@ interface Props {
 
 const stats: (keyof TFighter)[] = ["height", "weight", "age", "reach"];
 
-const Fight = ({ fight, display = "advanced" }: Props) => {
+const Fight = ({ display = "advanced", fight }: Props) => {
   const [statsMode, setStatsMode] = useState<"fighter" | "fight">();
 
   const fighterAOdds = fight.fighterA.odds?.[0]?.value;

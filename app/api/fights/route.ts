@@ -14,13 +14,7 @@ export async function GET(
   }
 
   const data = await prisma.fight.findMany({
-    where: onlyMain ? { eventId, matchNumber: 1 } : { eventId },
     include: {
-      winner: {
-        select: {
-          id: true,
-        },
-      },
       fighters: {
         select: {
           fighterId: true,
@@ -31,10 +25,16 @@ export async function GET(
           },
         },
       },
+      winner: {
+        select: {
+          id: true,
+        },
+      },
     },
     orderBy: {
       matchNumber: "asc",
     },
+    where: onlyMain ? { eventId, matchNumber: 1 } : { eventId },
   });
 
   let endDat = performance.now();
@@ -56,8 +56,8 @@ export async function GET(
     return {
       ...fight,
       ...more,
-      winner: more.winner as "A" | "B" | null,
       stats: fight.stats as any,
+      winner: more.winner as "A" | "B" | null,
     };
   });
 

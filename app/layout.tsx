@@ -24,8 +24,8 @@ const fontSans = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "MMA Inspector",
   description: "Get the latest MMA events and fights",
+  title: "MMA Inspector",
 };
 
 export default function RootLayout({

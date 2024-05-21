@@ -31,7 +31,7 @@ function Events({ organization, schedule }: Props) {
     ).json() as Promise<TEvent[]>;
 
   const { data: events, isFetched } = useQuery({
-    queryKey: ["events", organization, schedule, page],
+    enabled: !!organization && !!schedule,
     queryFn: async () => {
       const events = await fetchEvents(page);
       const mainFights = await fetchFights(events?.[0]?.id, true);
@@ -39,17 +39,17 @@ function Events({ organization, schedule }: Props) {
 
       return events;
     },
-    staleTime: STALE_TIME,
-    enabled: !!organization && !!schedule,
+    queryKey: ["events", organization, schedule, page],
     refetchOnWindowFocus: false,
+    staleTime: STALE_TIME,
   });
 
   const { mutate } = useMutation({
-    mutationKey: ["mainFight", organization, schedule],
     mutationFn: async () => {
       if (!!events?.[0]?.fights) return;
       events[0].fights = await fetchFights(events?.[0]?.id);
     },
+    mutationKey: ["mainFight", organization, schedule],
   });
 
   const eventsByMonth: { events: TEvent[]; month: string }[] = events?.reduce(
@@ -59,7 +59,7 @@ function Events({ organization, schedule }: Props) {
       });
       const monthIndex = acc.findIndex((item) => item.month === month);
       if (monthIndex === -1) {
-        acc.push({ month, events: [event] });
+        acc.push({ events: [event], month });
       } else {
         acc[monthIndex].events.push(event);
       }

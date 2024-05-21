@@ -26,10 +26,10 @@ interface Props {
 }
 
 const Header = ({
-  organization,
-  schedule,
   handleOrganizationChange,
   handleScheduleChange,
+  organization,
+  schedule,
 }: Props) => {
   const [isTop, setIsTop] = useState(true);
 

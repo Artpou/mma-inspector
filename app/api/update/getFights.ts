@@ -30,19 +30,19 @@ export async function getFights(
       id: fight.id,
       eventId: id,
       fightersId: fight.competitors.map((c) => c.id),
+      winnerId: fight.competitors.find((c) => c.winner)?.id,
       createdAt: new Date(),
-      updatedAt: new Date(fight.lastUpdated),
-      matchNumber: fight.matchNumber,
-      type,
       description: fight.description
         ?.replace(/\b\d+-\b/g, "")
         .replace(")", " min)")
         .replace("Rnd", "Round"),
-      titleShot: type?.includes("Title") || false,
-      weight: fight.weight?.text,
-      winnerId: fight.competitors.find((c) => c.winner)?.id,
+      matchNumber: fight.matchNumber,
       stats: undefined,
       status: undefined,
+      titleShot: type?.includes("Title") || false,
+      type,
+      updatedAt: new Date(fight.lastUpdated),
+      weight: fight.weight?.text,
     };
 
     const hasStats =
@@ -77,37 +77,37 @@ export async function getFights(
       data.stats = {};
 
       data.stats.fighterA = {
+        bodyStrikes: getPartStrikes(fighter1Stats, "Body"),
+        controlTime: getData(fighter1Stats, "timeInControl"),
+        headStrikes: getPartStrikes(fighter1Stats, "Head"),
         ko: getData(fighter1Stats, "knockDowns"),
-        strikes: getData(fighter1Stats, "totalStrikesLanded"),
-        strikesAttempted: getData(fighter1Stats, "totalStrikesAttempted"),
+        legStrikes: getPartStrikes(fighter1Stats, "Leg"),
         significantStrikes: getData(fighter1Stats, "sigStrikesLanded"),
         significantStrikesAttempted: getData(
           fighter1Stats,
           "sigStrikesAttempted"
         ),
-        controlTime: getData(fighter1Stats, "timeInControl"),
-        takedowns: getData(fighter1Stats, "takedownsLanded"),
+        strikes: getData(fighter1Stats, "totalStrikesLanded"),
+        strikesAttempted: getData(fighter1Stats, "totalStrikesAttempted"),
         submissions: getData(fighter1Stats, "submissions"),
-        bodyStrikes: getPartStrikes(fighter1Stats, "Body"),
-        legStrikes: getPartStrikes(fighter1Stats, "Leg"),
-        headStrikes: getPartStrikes(fighter1Stats, "Head"),
+        takedowns: getData(fighter1Stats, "takedownsLanded"),
       };
 
       data.stats.fighterB = {
+        bodyStrikes: getPartStrikes(fighter2Stats, "Body"),
+        controlTime: getData(fighter2Stats, "timeInControl"),
+        headStrikes: getPartStrikes(fighter2Stats, "Head"),
         ko: getData(fighter2Stats, "knockDowns"),
-        strikes: getData(fighter2Stats, "totalStrikesLanded"),
-        strikesAttempted: getData(fighter2Stats, "totalStrikesAttempted"),
+        legStrikes: getPartStrikes(fighter2Stats, "Leg"),
         significantStrikes: getData(fighter2Stats, "sigStrikesLanded"),
         significantStrikesAttempted: getData(
           fighter2Stats,
           "sigStrikesAttempted"
         ),
-        controlTime: getData(fighter2Stats, "timeInControl"),
-        takedowns: getData(fighter2Stats, "takedownsLanded"),
+        strikes: getData(fighter2Stats, "totalStrikesLanded"),
+        strikesAttempted: getData(fighter2Stats, "totalStrikesAttempted"),
         submissions: getData(fighter2Stats, "submissions"),
-        bodyStrikes: getPartStrikes(fighter2Stats, "Body"),
-        legStrikes: getPartStrikes(fighter2Stats, "Leg"),
-        headStrikes: getPartStrikes(fighter2Stats, "Head"),
+        takedowns: getData(fighter2Stats, "takedownsLanded"),
       };
     }
 
@@ -120,8 +120,8 @@ export async function getFights(
 
     data.status = {
       clock: status.clock,
-      round: status.period,
       name: status.result?.displayName,
+      round: status.period,
       shortName: status.result?.shortDisplayName,
       target: status.result?.target?.name,
     };

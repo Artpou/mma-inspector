@@ -54,17 +54,17 @@ export default function EventPage({ params }) {
   };
 
   const { data: event, isFetching: eventFetching } = useQuery({
-    queryKey: ["event", eventId],
     queryFn: async () => fetchEvent(eventId),
-    staleTime: STALE_TIME,
+    queryKey: ["event", eventId],
     refetchOnWindowFocus: false,
+    staleTime: STALE_TIME,
   });
 
   const { data: fights, isFetching: fightsFetching } = useQuery({
-    queryKey: ["fights", eventId],
     queryFn: async () => fetchFights(eventId),
-    staleTime: STALE_TIME,
+    queryKey: ["fights", eventId],
     refetchOnWindowFocus: false,
+    staleTime: STALE_TIME,
   });
 
   useEffect(() => {

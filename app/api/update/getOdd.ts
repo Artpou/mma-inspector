@@ -19,32 +19,32 @@ export async function getOdd(
     return url.split("/").pop().replace(/\D/g, "");
   };
 
-  const { homeOdds = [], awayOdds = [] } = oddsArray.reduce(
+  const { awayOdds = [], homeOdds = [] } = oddsArray.reduce(
     (acc: { homeOdds: ExtendedOdd[]; awayOdds: ExtendedOdd[] }, item) => {
       acc.homeOdds.push({
-        provider: item?.provider.name,
-        priority: item?.provider.priority,
-        favorite: item?.homeAthleteOdds.favorite,
-        value: item?.homeAthleteOdds.moneyLine || 0,
         fighterId: getFighterId(item?.homeAthleteOdds.athlete["$ref"]),
         fightId: fight.id,
         createdAt: new Date(),
+        favorite: item?.homeAthleteOdds.favorite,
+        priority: item?.provider.priority,
+        provider: item?.provider.name,
         updatedAt: new Date(),
+        value: item?.homeAthleteOdds.moneyLine || 0,
       });
       acc.awayOdds.push({
-        provider: item?.provider.name,
-        priority: item?.provider.priority,
-        favorite: item?.awayAthleteOdds.favorite,
-        value: item?.awayAthleteOdds.moneyLine || 0,
         fighterId: getFighterId(item?.awayAthleteOdds.athlete["$ref"]),
         fightId: fight.id,
         createdAt: new Date(),
+        favorite: item?.awayAthleteOdds.favorite,
+        priority: item?.provider.priority,
+        provider: item?.provider.name,
         updatedAt: new Date(),
+        value: item?.awayAthleteOdds.moneyLine || 0,
       });
       return acc;
     },
-    { homeOdds: [], awayOdds: [] }
-  ) || { homeOdds: [], awayOdds: [] };
+    { awayOdds: [], homeOdds: [] }
+  ) || { awayOdds: [], homeOdds: [] };
 
   return [...homeOdds, ...awayOdds];
 }
