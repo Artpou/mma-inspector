@@ -1,28 +1,26 @@
-import { Event, Fight } from "@prisma/client";
+import { Fight } from "@prisma/client";
 
-import { CORE_URL } from "./constants";
+import { clearLink } from "@/app/utils/string";
+
+import { ExtendedEvent } from "./getEvents";
 
 type ExtendedFight = Fight & {
   fightersId: string[];
 };
 
 export async function getFights(
-  event: Event,
+  event: ExtendedEvent,
   existingFights: Fight[] = []
 ): Promise<ExtendedFight[]> {
-  const { id, organization } = event;
+  const { id } = event;
 
-  const newEventsData = await fetch(
-    `${CORE_URL}/leagues/${organization}/events/${id}`
-  );
-  const newEvent = await newEventsData.json();
-  const newFights = newEvent.competitions.filter((fight) => {
+  const newFights = event.competitions.filter((fight) => {
     const find = existingFights.find((f) => f.id === fight.id);
 
     return !find || find.updatedAt < new Date(fight.updatedAt);
   });
 
-  const datas = await newFights.reverse().map(async (fight) => {
+  const datas = await newFights.map(async (fight) => {
     const type =
       fight.types?.length > 0 ? fight.types[0].text : fight.type?.text;
 
@@ -51,13 +49,13 @@ export async function getFights(
 
     if (!!data.winnerId && hasStats) {
       const fighter1StatsData = await fetch(
-        fight.competitors[0].statistics["$ref"]
+        clearLink(fight.competitors[0].statistics["$ref"])
       );
       const fighter1Stats = (await fighter1StatsData.json()).splits
         .categories[0].stats;
 
       const fighter2StatsData = await fetch(
-        fight.competitors[1].statistics["$ref"]
+        clearLink(fight.competitors[1].statistics["$ref"])
       );
       const fighter2Stats = (await fighter2StatsData.json()).splits
         .categories[0].stats;
@@ -113,9 +111,7 @@ export async function getFights(
 
     if (!fight.status) return data;
 
-    const responseStatus = await fetch(
-      fight.status["$ref"].replace("http", "https")
-    );
+    const responseStatus = await fetch(clearLink(fight.status["$ref"]));
     const status = await responseStatus.json();
 
     data.status = {

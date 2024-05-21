@@ -3,10 +3,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { sleep } from "@/app/utils/time";
 import prisma from "@/lib/prisma";
 
-import getEvents from "./getEvents";
+import getEvents, { ExtendedEvent } from "./getEvents";
 import { getFighter } from "./getFighter";
 import { getFights } from "./getFights";
 import { getOdd } from "./getOdd";
+
+const FORCE_UPDATE = [];
 
 export async function GET(_request: NextRequest) {
   const data = await getEvents();
@@ -27,38 +29,57 @@ export async function GET(_request: NextRequest) {
       } else if (find.updatedAt < event.updatedAt) {
         event.needsUpdate = true;
         acc.needUpdate.push(event);
+      } else if (FORCE_UPDATE.includes(event.id)) {
+        event.needsUpdate = true;
+        acc.needUpdate.push(event);
       }
 
       return acc;
     },
-    { create: [], needUpdate: [] }
+    { create: [] as ExtendedEvent[], needUpdate: [] as ExtendedEvent[] }
   );
 
+  if (create.length === 0 && needUpdate.length === 0) {
+    return NextResponse.json({ message: "No new events" });
+  }
+
   await prisma.event.createMany({
-    data: create,
+    data: create.map((event) => {
+      delete event.competitions;
+      return event;
+    }),
     skipDuplicates: true,
   });
 
   await prisma.$transaction(async (tx) => {
     for (const update of needUpdate) {
+      const { competitions: _competitions, ...updatedEvent } = update;
       await tx.event.update({
-        data: update,
+        data: updatedEvent,
         where: { id: update.id },
       });
     }
   });
 
-  const events = await prisma.event.findMany({
-    where: { needsUpdate: true },
-  });
+  const events = [...create, ...needUpdate];
 
-  await sleep(500);
+  await sleep(200);
 
   events.map(async (event) => {
     const fights = await getFights(event);
+    console.log("🚀 ~ events.map ~ fights:", fights);
+    await sleep(100);
+
+    await prisma.fight.deleteMany({
+      where: { eventId: event.id },
+    });
 
     fights.map(async (fight) => {
       const { fightersId, ...fightData } = fight;
+
+      await prisma.fight.create({
+        data: { ...fightData },
+      });
 
       for (const fighterId of fightersId) {
         const fighter = await getFighter(fighterId);
@@ -70,49 +91,19 @@ export async function GET(_request: NextRequest) {
         });
       }
 
-      await prisma.fight.upsert({
-        create: fightData,
-        update: fightData,
-        where: { id: fight.id },
-      });
-
       for (const fighterId of fightersId) {
-        const relationExists = await prisma.fightsOnFighters.findMany({
-          select: { id: true },
-          where: {
+        await prisma.fightsOnFighters.create({
+          data: {
             fighterId: fighterId,
             fightId: fight.id,
           },
         });
-
-        if (relationExists.length === 0) {
-          await prisma.fightsOnFighters.create({
-            data: {
-              fighterId: fighterId,
-              fightId: fight.id,
-            },
-          });
-        }
       }
 
       const odds = await getOdd(event, fight);
-
-      for (const odd of odds) {
-        const oddExists = await prisma.odd.findFirst({
-          where: { fighterId: odd.fighterId, fightId: odd.fightId },
-        });
-
-        if (oddExists) {
-          await prisma.odd.updateMany({
-            data: odd,
-            where: { fighterId: odd.fighterId, fightId: odd.fightId },
-          });
-        } else {
-          await prisma.odd.create({
-            data: odd,
-          });
-        }
-      }
+      await prisma.odd.createMany({
+        data: odds,
+      });
     });
   });
 

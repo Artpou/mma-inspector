@@ -1,16 +1,24 @@
 import { Event } from "@prisma/client";
 
 import { isOlderThanNDays } from "@/app/utils/date";
+import { clearLink } from "@/app/utils/string";
+import { sleep } from "@/app/utils/time";
 
 import { SITE_URL } from "./constants";
 
-async function getEvents({ organization = "all" } = {}): Promise<Event[]> {
+export type ExtendedEvent = Event & {
+  competitions: any[];
+};
+
+async function getEvents({ organization = "all" } = {}): Promise<
+  ExtendedEvent[]
+> {
   const response = await fetch(`${SITE_URL}/${organization}/scoreboard`);
   const scoreboard = await response.json();
 
   const calendar = await scoreboard.leagues[0].calendar
     .map((event) => {
-      const link = event.event["$ref"].replace(".pvt", ".com");
+      const link = clearLink(event.event["$ref"]);
       return {
         date: new Date(event.startDate),
         isFinished: new Date(event.startDate) < new Date(),
@@ -22,6 +30,8 @@ async function getEvents({ organization = "all" } = {}): Promise<Event[]> {
       (event) =>
         event.organization !== "other" && !isOlderThanNDays(event.date, 30)
     );
+
+  await sleep(100);
 
   const events = await calendar.map(async (event) => {
     const detailsResponse = await fetch(event.link);
@@ -48,6 +58,7 @@ async function getEvents({ organization = "all" } = {}): Promise<Event[]> {
       updatedAt: new Date(mainFight.lastUpdated),
       ...event,
       city: mainFight.venue?.address.city,
+      competitions: details.competitions,
       country: extractCountry(mainFight.venue?.address),
       description:
         (details.name.includes("vs") &&

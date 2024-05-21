@@ -2,12 +2,7 @@ import { Event, Fight, Odd } from "@prisma/client";
 
 import { CORE_URL } from "./constants";
 
-type ExtendedOdd = Omit<Odd, "id">;
-
-export async function getOdd(
-  event: Event,
-  fight: Fight
-): Promise<ExtendedOdd[]> {
+export async function getOdd(event: Event, fight: Fight): Promise<Odd[]> {
   const oddsData = await fetch(
     `${CORE_URL}/leagues/${event.organization}/events/${event.id}/competitions/${fight.id}/odds`
   );
@@ -20,25 +15,21 @@ export async function getOdd(
   };
 
   const { awayOdds = [], homeOdds = [] } = oddsArray.reduce(
-    (acc: { homeOdds: ExtendedOdd[]; awayOdds: ExtendedOdd[] }, item) => {
+    (acc: { homeOdds: Odd[]; awayOdds: Odd[] }, item) => {
       acc.homeOdds.push({
         fighterId: getFighterId(item?.homeAthleteOdds.athlete["$ref"]),
         fightId: fight.id,
-        createdAt: new Date(),
         favorite: item?.homeAthleteOdds.favorite,
         priority: item?.provider.priority,
         provider: item?.provider.name,
-        updatedAt: new Date(),
         value: item?.homeAthleteOdds.moneyLine || 0,
       });
       acc.awayOdds.push({
         fighterId: getFighterId(item?.awayAthleteOdds.athlete["$ref"]),
         fightId: fight.id,
-        createdAt: new Date(),
         favorite: item?.awayAthleteOdds.favorite,
         priority: item?.provider.priority,
         provider: item?.provider.name,
-        updatedAt: new Date(),
         value: item?.awayAthleteOdds.moneyLine || 0,
       });
       return acc;
