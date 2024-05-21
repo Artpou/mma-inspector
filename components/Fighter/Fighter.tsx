@@ -6,9 +6,8 @@ import unknownFighterProfil from "@/public/fighter-unkown-profil.png";
 import { Crown } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { TFight, TFighter } from "@/types";
+import { TFighter } from "@/types";
 
-import { Badge } from "../ui/badge";
 import FighterOdds from "./FighterOdds";
 
 interface TitleProps {

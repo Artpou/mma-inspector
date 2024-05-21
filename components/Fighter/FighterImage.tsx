@@ -4,7 +4,7 @@ import unknownFighterLeft from "@/public/fighter-unknown-left.png";
 import unknownFighterRight from "@/public/fighter-unknown-right.png";
 
 import { cn } from "@/lib/utils";
-import { TFight, TFighter } from "@/types";
+import { TFighter } from "@/types";
 
 import { Badge } from "../ui/badge";
 

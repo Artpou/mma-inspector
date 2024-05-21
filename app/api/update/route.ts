@@ -8,9 +8,8 @@ import { getFighter } from "./getFighter";
 import { getFights } from "./getFights";
 import { getOdd } from "./getOdd";
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   const data = await getEvents();
-  const force = request.nextUrl.searchParams.get("force");
 
   const existingEvent = await prisma.event.findMany({
     select: { id: true, updatedAt: true },

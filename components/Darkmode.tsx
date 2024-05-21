@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Moon, Sun } from "lucide-react";
 
@@ -10,7 +10,7 @@ interface Props {
   className?: string;
 }
 
-function Darkmode({ className }: Props) {
+function Darkmode({}: Props) {
   const [dark, setDark] = useState(
     (typeof window !== "undefined" &&
       window.sessionStorage.getItem("darkMode") === "true") ||

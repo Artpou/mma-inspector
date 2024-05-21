@@ -93,7 +93,7 @@ const FightShowcase = ({ event, fights, loadFights }: Props) => {
                   "w-12 mt-6 mx-2 cursor-pointer h-full",
                   havePrevious ? "hover:scale-125" : "opacity-0 cursor-default"
                 )}
-                onClick={(e) => {
+                onClick={() => {
                   loadFights();
                   havePrevious && setIndex((prev) => prev - 1);
                 }}
@@ -109,7 +109,7 @@ const FightShowcase = ({ event, fights, loadFights }: Props) => {
                   "w-12 mt-6 mx-2 cursor-pointer h-full",
                   haveNext ? "hover:scale-125" : "opacity-0 cursor-default"
                 )}
-                onClick={(e) => {
+                onClick={() => {
                   loadFights();
                   haveNext && setIndex((prev) => prev + 1);
                 }}

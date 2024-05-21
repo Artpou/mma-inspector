@@ -4,7 +4,7 @@ import { useMutation, useQuery } from "react-query";
 import dynamic from "next/dynamic";
 
 import { fetchFights } from "@/app/query";
-import { TEvent, TFight, TOrganization, TSchedule } from "@/types";
+import { TEvent, TOrganization, TSchedule } from "@/types";
 
 import FightShowcase from "../Fight/FightShowcase";
 import { Skeleton } from "../ui/skeleton";
@@ -21,7 +21,7 @@ type Props = {
 };
 
 function Events({ organization, schedule }: Props) {
-  const [page, setPage] = useState(0);
+  const [page, _setPage] = useState(0);
 
   const fetchEvents = async (page: number) =>
     (

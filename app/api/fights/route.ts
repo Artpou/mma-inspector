@@ -37,8 +37,6 @@ export async function GET(
     where: onlyMain ? { eventId, matchNumber: 1 } : { eventId },
   });
 
-  let endDat = performance.now();
-
   const fights = data.map((fight) => {
     const more = {
       fighterA: fight.fighters[0].fighter,

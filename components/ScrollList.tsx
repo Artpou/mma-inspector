@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 interface Props {
   children: React.ReactNode;
   label: string[];
-  onClick?: (index: number) => void;
+  onClick?: (_index: number) => void;
 }
 
 const ScrollList = ({ children, label, onClick }: Props) => {

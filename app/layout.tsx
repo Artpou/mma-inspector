@@ -2,7 +2,6 @@ import { Suspense } from "react";
 
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
-import Image from "next/image";
 
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Github, Linkedin } from "lucide-react";

@@ -19,8 +19,8 @@ import { ORGANIZATIONS } from "@/types";
 const Darkmode = dynamic(() => import("@/components/Darkmode"), { ssr: false });
 
 interface Props {
-  handleOrganizationChange: (value: string) => void;
-  handleScheduleChange: (value: string) => void;
+  handleOrganizationChange: (_value: string) => void;
+  handleScheduleChange: (_value: string) => void;
   organization: string;
   schedule: string;
 }

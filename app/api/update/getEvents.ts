@@ -4,11 +4,7 @@ import { isOlderThanNDays } from "@/app/utils/date";
 
 import { SITE_URL } from "./constants";
 
-async function getEvents({
-  index = 0,
-  organization = "all",
-  schedule = "upcoming",
-} = {}): Promise<Event[]> {
+async function getEvents({ organization = "all" } = {}): Promise<Event[]> {
   const response = await fetch(`${SITE_URL}/${organization}/scoreboard`);
   const scoreboard = await response.json();
 
