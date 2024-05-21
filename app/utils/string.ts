@@ -10,3 +10,11 @@ export const flagEmoji = (country: string) => {
   let isoCountry = getCountryCode(formattedCountry);
   return isoCountry !== false ? getEmojiFlag(isoCountry) : "";
 };
+
+export const clearLink = (link: string) => {
+  return link
+    .replace(".pvt", ".com")
+    .replace("https", "http")
+    .replace("lang=en", "")
+    .replace("&region=us", "");
+};

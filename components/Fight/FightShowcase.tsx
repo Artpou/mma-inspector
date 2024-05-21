@@ -83,8 +83,10 @@ const FightShowcase = ({ event, fights, loadFights }: Props) => {
               <div className="h-5" />
             )}
             <div className=" mb-10" />
-            <div className="hidden sm:block">
-              <Countdown date={event.date} className="font-medium" />
+            <div className="hidden sm:block z-20">
+              <Countdown date={event.date} className="font-medium">
+                <CalendarLink event={event} />
+              </Countdown>
             </div>
 
             <div className="z-10 flex-center justify-between absolute h-full w-full left-0">

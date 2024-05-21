@@ -61,7 +61,7 @@ const ScrollList = ({ children, label, onClick }: Props) => {
           <div
             key={index}
             className={cn(
-              "flex-center cursor-pointer bg-muted m-1 text-muted-foreground border w-5 sm:w-12 h-8 sm:h-12",
+              "flex-center cursor-pointer bg-muted m-1 text-muted-foreground border w-5 sm:w-10 h-8 sm:h-10",
               firstVisibleIndex === index &&
                 "bg-card text-foreground rounded-sm"
             )}

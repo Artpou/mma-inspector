@@ -52,7 +52,7 @@ const Countdown = ({ children, date, className }: Props) => {
   return (
     <div
       className={cn(
-        "flex items-center z-10 bg-[hsla(0,0%,0%,0.7)] rounded-md px-2 py-1 gap-4 justify-center",
+        "flex items-center bg-[hsla(0,0%,0%,0.7)] rounded-md px-2 py-1 gap-4 justify-center",
         className
       )}
     >

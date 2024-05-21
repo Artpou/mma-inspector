@@ -69,7 +69,6 @@ export default function EventPage({ params }) {
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      console.log("🚀 ~ timeout ~ scrollIndex:", scrollIndex);
       if (!!fights && !!scrollToRef.current && scrollIndex >= 0) {
         scrollToRef.current.scrollIntoView({
           behavior: "smooth",
@@ -91,7 +90,7 @@ export default function EventPage({ params }) {
   return (
     <>
       <div className="fixed top-0 flex items-center border space-x-2 z-20 bg-card p-2 w-full">
-        <Button size="sm" onClick={() => router.push("/")}>
+        <Button size="sm" onClick={() => router.back()}>
           <ArrowLeft className="mr-2" size={16} />
           <span>Back</span>
         </Button>

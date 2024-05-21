@@ -14,7 +14,7 @@ export const FightFightersStats = ({ classname, fight }: FightersStatProps) => {
     return (
       <div
         className={cn(
-          "relative w-full h-1 rounded-full bg-slate-300",
+          "relative w-full h-1 rounded-full bg-slate-300 sm:!mb-3",
           fight.winner === "B" && "bg-green-700",
           total === 0 && "bg-muted"
         )}

@@ -3,6 +3,9 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 
 import BeltPng from "@/public/belt.png";
+import chest from "@/public/bodypart/chest.png";
+import leg from "@/public/bodypart/leg.png";
+import head from "@/public/bodypart/person.png";
 import { TabsList } from "@radix-ui/react-tabs";
 import { ArrowLeft, ArrowRight, Crown } from "lucide-react";
 
@@ -53,10 +56,8 @@ const Fight = ({ display = "advanced", fight }: Props) => {
       <FighterImage
         display={display}
         fighter={fight.fighterA}
-        classname={cn(
-          "hidden sm:flex",
-          fight.winner === "B" && "filter grayscale"
-        )}
+        winner={fight.winner}
+        classname="hidden sm:flex"
         stats={fight.stats?.fighterB}
       />
 
@@ -96,23 +97,43 @@ const Fight = ({ display = "advanced", fight }: Props) => {
         {hasWinner && fight.status && (
           <div className="flex-center flex-col my-2 justify-center sm:mb-4">
             <div className="flex items-center space-x-2">
-              <span className="font-medium sm:hidden">{fight.status.name}</span>
-              <h2 className="hidden sm:block">{fight.status.name}</h2>
+              <span className="sm:text-xl sm:font-medium flex items-center gap-2">
+                {fight.status.target === "head" && (
+                  <Image
+                    src={head}
+                    alt="head"
+                    width={20}
+                    height={20}
+                    className="hidden sm:block w-6 h-6"
+                  />
+                )}
+                {fight.status.target === "body" && (
+                  <Image
+                    src={chest}
+                    alt="chest"
+                    width={20}
+                    height={20}
+                    className="hidden sm:block w-6 h-6"
+                  />
+                )}
+                {fight.status.target === "leg" && (
+                  <Image
+                    src={leg}
+                    alt="leg"
+                    width={20}
+                    height={20}
+                    className="hidden sm:block w-6 h-6"
+                  />
+                )}
+                {fight.status.name}
+              </span>
               {fight.status.target && (
-                <>
-                  <span className="sm:hidden font-medium">
-                    {" "}
-                    -{" "}
-                    {fight.status.target.charAt(0).toUpperCase() +
-                      fight.status.target.slice(1)}
-                  </span>
-                  <h2 className="hidden sm:block">
-                    {" "}
-                    -{" "}
-                    {fight.status.target.charAt(0).toUpperCase() +
-                      fight.status.target.slice(1)}
-                  </h2>
-                </>
+                <span className="sm:text-xl sm:font-medium">
+                  {" "}
+                  -{" "}
+                  {fight.status.target.charAt(0).toUpperCase() +
+                    fight.status.target.slice(1)}
+                </span>
               )}
             </div>
             {!fight.status.name?.includes("Decision") && (
@@ -210,11 +231,9 @@ const Fight = ({ display = "advanced", fight }: Props) => {
       <FighterImage
         display={display}
         fighter={fight.fighterB}
+        winner={fight.winner}
         position="right"
-        classname={cn(
-          "hidden sm:flex",
-          fight.winner === "A" && "filter grayscale"
-        )}
+        classname="hidden sm:flex"
         stats={fight.stats?.fighterA}
       />
     </div>
