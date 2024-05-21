@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 
+import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Github, Linkedin } from "lucide-react";
 import { Inter } from "next/font/google";
@@ -50,6 +51,7 @@ export default function RootLayout({
             <ScrollButton />
             {children}
             <SpeedInsights />
+            <Analytics />
           </ReactQueryProvider>
           <footer className="flex flex-col gap-3 mb-2 text-center text-sm text-muted-foreground py-4">
             <div>
