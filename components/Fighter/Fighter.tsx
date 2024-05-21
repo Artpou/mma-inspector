@@ -93,7 +93,7 @@ export const Fighter = ({ fighter, winner, className }: TitleProps) => {
           </span>
         )}
         <div className="hidden md:block">
-          <FighterOdds fighter={fighter} classname="mt-4" />
+          <FighterOdds fighter={fighter} className="mt-4" />
         </div>
       </div>
     </div>
