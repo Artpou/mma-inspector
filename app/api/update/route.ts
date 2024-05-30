@@ -10,8 +10,9 @@ import { getOdd } from "./getOdd";
 
 const FORCE_UPDATE = [];
 
-export async function GET(_request: NextRequest) {
-  const data = await getEvents();
+export async function GET(request: NextRequest) {
+  const organization = request.nextUrl.searchParams.get("organization");
+  const data = await getEvents({ organization });
 
   const existingEvent = await prisma.event.findMany({
     select: { id: true, updatedAt: true },

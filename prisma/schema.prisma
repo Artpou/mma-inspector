@@ -16,8 +16,8 @@ model Odd {
   priority  Int
   favorite  Boolean
   value     Float
-  fighter   Fighter @relation(fields: [fighterId], references: [id], onDelete: Cascade)
-  fight     Fight   @relation(fields: [fightId], references: [id], onDelete: Cascade)
+  fighter   Fighter @relation(fields: [fighterId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  fight     Fight   @relation(fields: [fightId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@id([fightId, fighterId, provider])
 }
@@ -67,8 +67,8 @@ model Fight {
 model FightsOnFighters {
   fightId   String
   fighterId String
-  fight     Fight   @relation(fields: [fightId], references: [id], onDelete: Cascade)
-  fighter   Fighter @relation(fields: [fighterId], references: [id], onDelete: Cascade)
+  fight     Fight   @relation(fields: [fightId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  fighter   Fighter @relation(fields: [fighterId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@id([fightId, fighterId])
 }
