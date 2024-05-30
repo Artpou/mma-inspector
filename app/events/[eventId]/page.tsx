@@ -21,16 +21,16 @@ const Darkmode = dynamic(() => import("@/components/Darkmode"), { ssr: false });
 
 const STALE_TIME = 1000 * 60 * 2;
 
-const EventLoader = () => (
-  <div className="flex flex-col">
+const Loader = () => (
+  <div className="flex flex-col gap-4">
     {Array.from({ length: 10 }).map((_, key) => (
-      <Skeleton key={key} className="flex m-6 h-[350px] sm:h-[500px]" />
+      <Skeleton key={key} className="flex mx-6 h-[450px] sm:h-[500px]" />
     ))}
   </div>
 );
 
 const Fight = dynamic(() => import("@/components/Fight/Fight"), {
-  loading: () => <EventLoader />,
+  loading: () => <Loader />,
 });
 
 export default function EventPage({ params }) {
@@ -142,7 +142,7 @@ export default function EventPage({ params }) {
             >
               {!!fights ? (
                 fights?.map((fight, key) => (
-                  <div key={key} className="relative">
+                  <div key={key} className="flex flex-col relative gap-4">
                     {key === +scrollIndex && (
                       <div className="absolute top-[-60px]" ref={scrollToRef} />
                     )}
@@ -150,7 +150,7 @@ export default function EventPage({ params }) {
                   </div>
                 ))
               ) : (
-                <EventLoader />
+                <Loader />
               )}
             </ScrollList>
           </div>
@@ -158,7 +158,7 @@ export default function EventPage({ params }) {
           <div className="flex flex-col items-center">
             <Skeleton className="mt-2 mb-4 w-80 h-36" />
             <div className="w-full">
-              <EventLoader />
+              <Loader />
             </div>
           </div>
         )}

@@ -50,7 +50,7 @@ const Fight = ({ display = "advanced", fight }: Props) => {
     <div
       className={cn(
         "flex justify-evenly sm:py-6 px-2 overflow-x-hidden",
-        display === "advanced" && "min-h-[350px] sm:min-h-[500px]"
+        display === "advanced" && "min-h-[450px] sm:min-h-[500px]"
       )}
     >
       <FighterImage
