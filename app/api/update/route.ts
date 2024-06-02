@@ -8,11 +8,12 @@ import { getFighter } from "./getFighter";
 import { getFights } from "./getFights";
 import { getOdd } from "./getOdd";
 
-const FORCE_UPDATE = [];
-
 export async function GET(request: NextRequest) {
   const organization =
     request.nextUrl.searchParams.get("organization") || "all";
+
+  const forceUpdate = request.nextUrl.searchParams.get("forceUpdate");
+
   const data = await getEvents({ organization });
 
   const existingEvent = await prisma.event.findMany({
@@ -31,7 +32,7 @@ export async function GET(request: NextRequest) {
       } else if (find.updatedAt < event.updatedAt) {
         event.needsUpdate = true;
         acc.needUpdate.push(event);
-      } else if (FORCE_UPDATE.includes(event.id)) {
+      } else if ([forceUpdate].includes(event.id)) {
         event.needsUpdate = true;
         acc.needUpdate.push(event);
       }
