@@ -1,20 +1,8 @@
 {
   "crons": [
     {
-      "path": "/api/update?organization=ufc",
-      "schedule": "0 5 * * *"
-    },
-    {
-      "path": "/api/update?organization=pfl",
-      "schedule": "0 4 * * *"
-    },
-    {
-      "path": "/api/update?organization=bellator",
-      "schedule": "0 3 * * *"
-    },
-    {
-      "path": "/api/update?organization=other",
-      "schedule": "0 2 * * *"
+      "path": "/api/update",
+      "schedule": "0 7 * * *"
     }
   ]
 }
