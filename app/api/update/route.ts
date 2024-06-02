@@ -8,6 +8,10 @@ import { getFighter } from "./getFighter";
 import { getFights } from "./getFights";
 import { getOdd } from "./getOdd";
 
+export const config = {
+  maxDuration: 25,
+};
+
 export async function GET(request: NextRequest) {
   const organization =
     request.nextUrl.searchParams.get("organization") || "all";
@@ -66,11 +70,9 @@ export async function GET(request: NextRequest) {
 
   const events = [...create, ...needUpdate];
 
-  await sleep(200);
-
-  events.map(async (event) => {
+  for (const event of events) {
+    await sleep(200);
     const fights = await getFights(event);
-    await sleep(100);
 
     await prisma.fight.deleteMany({
       where: { eventId: event.id },
@@ -107,7 +109,7 @@ export async function GET(request: NextRequest) {
         data: odds,
       });
     });
-  });
+  }
 
   await prisma.event.updateMany({
     data: { needsUpdate: false },
