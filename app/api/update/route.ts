@@ -8,9 +8,7 @@ import { getFighter } from "./getFighter";
 import { getFights } from "./getFights";
 import { getOdd } from "./getOdd";
 
-export const config = {
-  maxDuration: 25,
-};
+export const maxDuration = 25;
 
 export async function GET(request: NextRequest) {
   const organization =

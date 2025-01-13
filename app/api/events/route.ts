@@ -17,17 +17,17 @@ export async function GET(request: NextRequest) {
     where:
       organization === "all"
         ? {
-            isFinished: schedule === "past",
             date: {
               lt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 140),
             },
+            isFinished: schedule === "past",
           }
         : {
-            isFinished: schedule === "past",
-            organization,
             date: {
               lt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 140),
             },
+            isFinished: schedule === "past",
+            organization,
           },
   });
 
