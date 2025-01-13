@@ -53,7 +53,13 @@ export default function RootLayout({
             <SpeedInsights />
             {process.env?.ENV !== "development" && <Analytics />}
           </ReactQueryProvider>
-          <footer className="flex flex-col gap-3 mb-2 text-center text-sm text-muted-foreground py-4">
+          <div className="fixed bottom-0 right-0 p-2 w-full bg-red-800 text-white font-medium items-center justify-center flex">
+            <span>
+              due to new ESPN API, this app cannot show upcoming events, you can
+              still check the older fights
+            </span>
+          </div>
+          <footer className="flex flex-col gap-3 mb-8 text-center text-sm text-muted-foreground py-4">
             <div>
               <span className="mr-1">Built by</span>
               <a

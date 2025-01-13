@@ -103,7 +103,9 @@ const Header = ({
         <div className="flex w-full ml-2 items-center justify-between">
           <Tabs value={schedule} onValueChange={handleScheduleChange}>
             <TabsList>
-              <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
+              <TabsTrigger disabled value="upcoming">
+                Upcoming
+              </TabsTrigger>
               <TabsTrigger value="past">Past</TabsTrigger>
             </TabsList>
           </Tabs>

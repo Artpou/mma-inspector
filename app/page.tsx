@@ -18,7 +18,7 @@ export default function Home() {
 
   const schedule = isSchedule(searchParams.get("schedule"))
     ? (searchParams.get("schedule") as TSchedule)
-    : "upcoming";
+    : "past";
 
   const handleOrganizationChange = (value: string) => {
     if (isOrganization(value)) {
