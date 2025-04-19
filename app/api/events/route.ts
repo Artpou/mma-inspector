@@ -18,13 +18,13 @@ export async function GET(request: NextRequest) {
       organization === "all"
         ? {
             date: {
-              lt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 140),
+              lt: new Date("2024-07-01"),
             },
             isFinished: schedule === "past",
           }
         : {
             date: {
-              lt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 140),
+              lt: new Date("2024-07-01"),
             },
             isFinished: schedule === "past",
             organization,
