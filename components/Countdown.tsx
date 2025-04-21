@@ -6,6 +6,7 @@ interface Props {
   children?: React.ReactNode;
   date?: string;
   className?: string;
+  showDays?: boolean;
 }
 
 const Countdown = ({ children, date, className }: Props) => {
